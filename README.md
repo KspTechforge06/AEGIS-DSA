@@ -1,305 +1,180 @@
 # AEGIS — Autonomous Emergency Grid & Incident System
 
-> **AI-Powered Autonomous Drone Response for Urban Safety**  
-> A simulation-based command-center platform for real-time incident detection, drone dispatch, and live tactical visualization.
+AEGIS is a browser-based **drone-response simulation dashboard** set in Pune. It demonstrates how incident detection, drone dispatch, graph routing, restricted-airspace checks, and priority data structures can fit together in a command interface.
 
----
+AEGIS is an educational simulation. It does not communicate with real drones, validate real aviation restrictions, or provide operational flight guidance.
 
-## Table of Contents
+## Start here
 
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [System Architecture](#system-architecture)
-4. [Dashboard Panels](#dashboard-panels)
-5. [Simulation Engine](#simulation-engine)
-6. [File Structure](#file-structure)
-7. [How to Run](#how-to-run)
-8. [Controls & Usage](#controls--usage)
-9. [Incident Types](#incident-types)
-10. [Drone Fleet](#drone-fleet)
-11. [Tech Stack](#tech-stack)
-12. [Upgrade Roadmap](#upgrade-roadmap)
-13. [License](#license)
+Open **index.html** for the current AEGIS dashboard. For reliable map tiles and webcam access, serve the folder over HTTP instead of opening the page as a file:
 
----
+    python3 -m http.server 8000
 
-## Project Overview
+Then visit **http://localhost:8000/index.html**.
 
-AEGIS is a single-file browser-based **Urban Drone Response Command Dashboard** that simulates the full pipeline of AI-driven emergency response:
+The app uses Leaflet, fonts, TensorFlow.js, COCO-SSD, and map tiles from external services. Those features need internet access. The dashboard can still generate simulated alerts when webcam permission is denied or the detection model cannot load. The map depends on its tile service.
 
-```
-Detection → Alert → Dispatch → Navigation → Arrival → Resolution
-```
+## What the main dashboard does
 
-The platform is built entirely in vanilla HTML/CSS/JavaScript with no external dependencies. It uses a canvas-based animated map, simulated video camera feeds with bounding-box AI detections, a live drone fleet panel, incident queue, and a scrolling system log — all rendered in real time at ~60fps.
+- Shows a six-drone simulated fleet, battery level, status, altitude, and ETA.
+- Generates simulated incidents at four Pune camera locations. The simulation also draws animated camera feeds and detection boxes.
+- Optionally requests webcam access for camera 1 and runs COCO-SSD person detection when the browser, network, and model allow it.
+- Places drones, incidents, air corridors, and no-fly zones on a Leaflet map.
+- Routes drones over a modeled air-corridor graph using selectable algorithms.
+- Queues incidents in a threaded binary search tree when no drone is available.
+- Shows a live event log, route tester, map-layer controls, and DSA inspector.
 
----
+## Algorithms and data structures
 
-## Features
+### Air-corridor graph
 
-| Feature | Description |
+The main dashboard models Pune airspace as an undirected, weighted graph:
+
+- **Vertices:** 16 named corridor waypoints.
+- **Edges:** 18 bidirectional corridor links.
+- **Edge weights:** Haversine distance in meters between waypoint coordinates.
+- **Restricted zones:** Two static circles, around Pune Airport/Lohegaon AFB and the Raj Bhavan/VIP area.
+
+The graph is an adjacency list. Each edge is checked against the restricted zones when the graph is built. The current intersection check samples points along a segment at fixed intervals; it is an approximation.
+
+### A* search
+
+A* is the default routing mode. It ranks candidate waypoints using:
+
+- g(n): distance traveled through the graph so far.
+- h(n): Haversine distance from the candidate waypoint to the target waypoint.
+- f(n) = g(n) + h(n).
+
+Edges marked as blocked are skipped. The current implementation sorts an array of candidates to choose the next node; it does not use a heap. This is adequate for the small demonstration graph.
+
+### Dijkstra's algorithm
+
+Dijkstra's mode finds a route with the lowest sum of edge distances. It uses the same blocked-edge rules as A*. Its candidate queue is also an array sorted on each iteration.
+
+### Breadth-first search (BFS)
+
+BFS finds a route with the fewest graph edges (fewest hops), regardless of their distances. The interface also reports the sum of the distances along that selected path; that sum is not what BFS minimizes.
+
+### Direct route
+
+Direct mode draws a straight route between the drone and incident coordinates and reports their Haversine distance. It is included as a comparison mode. It does not route around no-fly zones.
+
+### From coordinates to graph routes
+
+For A*, Dijkstra, and BFS, the app snaps the drone and incident to their nearest corridor vertices, finds a graph path, then adds the start and destination coordinates as route endpoints. Those short connector segments are not checked against the restricted zones.
+
+If a graph search cannot find a route, the current code returns a direct-path fallback. Treat that result as **unverified**, not as proof that a clear corridor exists. A future improvement should return an explicit “no route” state instead.
+
+### Drone selection and movement
+
+When an incident arrives and a drone is free, the app uses a greedy nearest-drone search: it compares the Euclidean distance between normalized map coordinates and selects the closest standby drone. This selection is separate from the graph-routing algorithm; it does not compare actual flight-route distances.
+
+After dispatch, the drone moves toward each route waypoint in sequence. The animation uses normalized map coordinates and a fixed simulated speed. ETA is an estimate derived from route distance and simulated speed.
+
+### Double-threaded binary search tree (TBST)
+
+The dashboard's incident queue is a double-threaded binary search tree. When a node has no left child, its left pointer can point to its in-order predecessor; when it has no right child, its right pointer can point to its in-order successor. The thread flags distinguish a thread from a real child link.
+
+Incident keys are calculated from severity, confidence, and ID:
+
+    severity component + round(confidence × 900) + (incident ID mod 100)
+
+The severity component is 3000 for critical, 2000 for high, and 1000 for medium. Larger keys appear first in reverse in-order traversal. Because the key uses the incident ID modulo 100, key collisions are possible.
+
+The tree supports iterative insertion, deletion, in-order traversal, and reverse in-order traversal. Thread links allow the traversal to move from one node to its predecessor or successor without recursion or a separate traversal stack. The current traversal methods collect their results in an array, so the complete operation uses O(n) memory for that output. The tree is not self-balancing; its height can reach O(n) in the worst case.
+
+### Complexity notes
+
+- **Nearest-drone scan:** O(D), where D is the number of drones (six in the demo).
+- **Haversine calculation:** O(1) per distance.
+- **BFS:** O(V + E) for graph traversal with an adjacency list; the implementation also copies candidate paths, so it has extra allocation overhead.
+- **TBST insert/delete:** O(h), where h is the tree height; h is O(n) in the worst case because the tree is not balanced.
+- **TBST traversal:** O(n) node visits. Successor/predecessor navigation uses threads without recursion or an explicit traversal stack, but the current methods return an array, which takes O(n) output memory.
+- **A* and Dijkstra:** Their standard heap-based bounds do not describe this implementation. Both choose the next candidate by sorting an array on each iteration; that is intentionally simple for a 16-node graph.
+
+New incidents are dispatched immediately if a drone is free. Incidents wait in the TBST when all drones are busy; when a drone returns, pending incidents are scanned in descending key order and assigned to available drones.
+
+### Distance and geometry helpers
+
+- **Haversine distance** estimates great-circle distance between two latitude/longitude points.
+- **Coordinate conversion** maps GPS coordinates to normalized positions for the simulation and back.
+- **Restricted-zone edge check** samples a straight segment and checks each sample's Haversine distance from each zone center.
+- **Waypoint planner area estimate** uses the shoelace formula on the entered waypoint polygon.
+
+## Simulation behavior
+
+- Six fictional drone records are initialized with random starting battery levels and altitudes.
+- The SIMULATE button creates a random incident immediately.
+- AUTO mode checks every four seconds and creates an incident with a 35% chance on each check.
+- Simulated feeds show procedural scenes and boxes. They do not analyze real CCTV footage.
+- If camera access is granted, camera 1 can run the COCO-SSD v2 Lite MobileNet model. A detection classified as person with confidence above 0.62 can generate a webcam incident, subject to an 18-second cooldown.
+- Drone movement, response time, battery drain, and ETA are illustrative simulation values. They are not calibrated to real aircraft.
+
+## Main dashboard controls
+
+- **SIMULATE:** Create one simulated incident.
+- **AUTO:** Toggle random incident generation.
+- **CLEAR:** Clear incidents and reset the simulated fleet.
+- **CORRIDORS:** Show or hide graph edges and restricted zones.
+- **ALGO:** Cycle between A*, Dijkstra, BFS, and Direct.
+- **DARK / SAT / OSM:** Change the map tile layer.
+- **DSA INSPECTOR:** Inspect the TBST and test graph routes between selected waypoints.
+- **Drone cards:** View the current simulated fleet state.
+
+## Repository files
+
+### Current AEGIS app
+
+| File | Purpose |
 |---|---|
-| AI Incident Detection | Simulated YOLOv8-style bounding boxes on 4 live camera feeds |
-| Real-time Alert Generation | Incidents appear instantly with severity, location, and confidence score |
-| Geolocation Mapping | Canvas-based tactical city map (Pune urban sector) |
-| Nearest-Drone Dispatch | Euclidean distance algorithm selects closest available drone |
-| Live Drone Tracking | Animated drone icons navigate to incident sites with trail rendering |
-| ETA Display | Per-drone estimated time of arrival updated each frame |
-| Incident Queue | Right-panel incident list with severity classification |
-| System Log | Timestamped rolling log of all system events |
-| Auto Simulation | Timer-driven random incident generation |
-| Battery Simulation | Drones drain battery during dispatch; visual bar indicator |
+| **index.html** | Main AEGIS dashboard. Contains the interface, theme, simulation, Leaflet map, route graph, A*/Dijkstra/BFS, TBST, webcam/COCO-SSD integration, and DSA inspector. Start here. |
+| **aegis_waypoint_dashboard(1).html** | Separate waypoint mission-planning demo. Lets the operator add, edit, drag, and remove waypoints, then displays the ordered route and summary calculations. Its route is a waypoint sequence; it is not the main app's graph pathfinder. |
+| **drone_response_platform.html** | Earlier AEGIS prototype. Uses simpler nearest-drone selection and direct simulated movement; it does not contain the main dashboard's current graph/TBST inspector. |
+| **update.html** | Earlier AEGIS dashboard iteration, kept as a comparison/reference copy. It uses simpler incident and drone logic than index.html. |
 
----
+### Other demos and assets
 
-## System Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    AEGIS Dashboard                      │
-├──────────────┬──────────────────────┬───────────────────┤
-│  Drone Fleet │    Tactical Map      │  Incident Queue   │
-│  Panel       │    (Canvas 2D)       │                   │
-│  (6 drones)  │    City grid         │  Alert cards      │
-│              │    Drone icons       │  Severity tags    │
-│  Status tags │    Incident markers  │  Drone assigned   │
-│  Battery bar │    Path trails       │  ETA countdown    │
-│  ETA display │    Patrol zones      │                   │
-├──────────────┴──────┬───────────────┴───────────────────┤
-│  Video Feeds (4x)   │  System Log                       │
-│  Canvas animation   │  Timestamped events               │
-│  Bounding boxes     │  Detection / Dispatch / Return     │
-│  Scan line effect   │  Rolling 60-entry history         │
-└─────────────────────┴───────────────────────────────────┘
-```
-
----
-
-## Dashboard Panels
-
-### 1. Header Bar
-- **Brand**: AEGIS logo + full system name
-- **Status indicators**: System nominal, active incident count, sector ID, coverage %
-- **Live clock**: Real-time `HH:MM:SS` display
-
-### 2. Left Panel — Drone Fleet
-Displays all 6 drones with:
-- Drone ID (e.g. `KITE-01`, `HAWK-03`, `RAVEN-05`)
-- Model name (DJI M30T / Parrot Anafi / SkyScout X)
-- Status badge: `STANDBY` / `DISPATCHED` / `RETURNING` / `CHARGING`
-- Battery percentage + color-coded bar (green → amber → red)
-- Altitude reading (wobbles realistically)
-- ETA in seconds when dispatched
-- Bottom strip: live counts of Active / Dispatched / Charging
-
-### 3. Center Panel — Tactical Map
-A `<canvas>` rendering an animated top-down city map:
-- **Background**: City grid with road network, building blocks, patrol zones
-- **Incident markers**: Pulsing red danger circles with incident type icons
-- **Drone icons**: Cross-shaped symbols with rotation animation when active
-- **Path trails**: Purple dotted trail following drone movement
-- **Dispatch lines**: Dashed lines from drone to incident target
-- **Legend**: Color key for all map elements
-- **Coordinates display**: Static GPS reference (Pune sector)
-
-### 4. Right Panel — Incident Queue
-Each incident card shows:
-- Incident type with icon (e.g. `🔥 FIRE DETECTED`)
-- Severity badge: `CRITICAL` / `HIGH` / `MEDIUM`
-- Location name and camera number
-- Detection description and confidence score (%)
-- Assigned drone ID and ETA
-
-### 5. Bottom Left — Video Feeds (4 cameras)
-Four canvas-based simulated CCTV feeds showing:
-- Animated city scene: buildings, pedestrians, vehicles
-- Scan-line and timestamp overlay for realism
-- **AI detection bounding boxes** with corner bracket style on incident trigger
-- Red border pulse animation when camera detects an incident
-- Camera label, zone name, and `● LIVE` status
-
-### 6. Bottom Right — System Log
-Rolling timestamped log with color-coded entry types:
-
-| Color | Type | Example |
-|---|---|---|
-| Red | Alert | `DETECTION: FIRE DETECTED @ FC Road [CONF: 91.2%]` |
-| Purple | Dispatch | `DISPATCH: KITE-01 → INCIDENT #1002 \| ETA 14s` |
-| Green | OK | `ARRIVED: HAWK-03 @ INCIDENT #1003` |
-| Amber | Warning | `WARNING: No drones available for INCIDENT #1004` |
-| Dim | System | `SYSTEM: All subsystems nominal` |
-
----
-
-## Simulation Engine
-
-### Drone Movement
-Each drone has:
-- `(x, y)` normalized position (0.0–1.0 of canvas)
-- `(bx, by)` base position (home station)
-- `(targetX, targetY)` current navigation target
-- `speed` value (~0.002 units/frame)
-- `trail[]` array (last 30 positions) for path rendering
-
-Movement is computed each frame:
-```
-direction = normalize(target - current)
-position += direction * speed
-```
-
-When a dispatched drone reaches its target (distance < 0.005), it transitions to `on-scene`, waits 5–10 seconds (simulated response time), then returns to base.
-
-### Dispatch Algorithm
-When an incident is created, `findNearestDrone()` scans all `standby` drones and picks the one with minimum Euclidean distance to the incident coordinates. This is a greedy nearest-neighbor approach — a placeholder for A* pathfinding in production.
-
-### Battery Drain
-Drones in `dispatched` or `on-scene` status lose `0.02%` battery per frame (~1.2% per second at 60fps). Battery affects the visual indicator but does not currently ground drones (upgrade opportunity).
-
-### Auto Simulation
-When enabled, a `setInterval` fires every 4 seconds with a 35% probability of triggering a random incident, creating a realistic sparse-event pattern.
-
----
-
-## File Structure
-
-```
-drone_response_platform.html     ← entire platform, single file
-```
-
-All code (HTML structure, CSS variables, JavaScript engine) is contained in one file for zero-dependency portability. No build step, no npm, no server required.
-
----
-
-## How to Run
-
-1. Download `drone_response_platform.html`
-2. Open in any modern browser (Chrome, Firefox, Edge, Arc)
-3. No internet connection required — fully offline
-
-```bash
-# Or serve locally
-npx serve .
-# Then open http://localhost:3000/drone_response_platform.html
-```
-
-**Browser compatibility**: Requires Canvas 2D API and `requestAnimationFrame`. Works in all Chromium and Firefox versions from 2020+.
-
----
-
-## Controls & Usage
-
-| Control | Action |
+| File | Purpose |
 |---|---|
-| `⚡ SIMULATE` button | Triggers a random incident immediately |
-| `AUTO: OFF` button | Toggles auto-simulation (incident every ~4s) |
-| `✕ CLEAR` button | Clears all active incidents, returns all drones to base |
-| Click drone card | (UI hook — extend to select/highlight drone on map) |
+| **index2.html** | NEXUS landing-page/portfolio experiment. It is separate from AEGIS. |
+| **game.html** | NEXUS “Void Striker” canvas arcade-game demo. It is separate from AEGIS. |
+| **Experiential Learning_TBT.docx.pdf** | Course activity sheet that motivates the graph traversal, shortest-path, and threaded-binary-tree demonstrations. |
+| **carto_test.png** | CARTO tile test image showing the API-key-required watermark. Diagnostic evidence, not used by the app. |
+| **esri_sample.jpg** | Esri tile test sample. Diagnostic evidence, not used by the app. |
+| **esri_test.jpg** | Empty tile-test placeholder. Not used by the app. |
 
-### Simulation Flow
-1. Click **⚡ SIMULATE** — an incident spawns at a random map location
-2. The camera feed for that zone flashes red with a bounding box detection
-3. An incident card appears in the right queue with severity and confidence
-4. The nearest drone is selected and dispatched within 400ms
-5. On the map, a dashed line appears from drone to incident; drone begins moving
-6. System log records the full event chain
-7. Drone arrives, waits on-scene, then auto-returns to base
+## External services and browser permissions
 
----
+The main dashboard loads:
 
-## Incident Types
+- Leaflet 1.9.4 from unpkg for the interactive map.
+- Leaflet Heat from jsDelivr for the incident heat layer.
+- TensorFlow.js and COCO-SSD from jsDelivr for optional webcam detection.
+- Manrope and IBM Plex Mono from Google Fonts.
+- Esri Dark Gray, Esri World Imagery, or OpenStreetMap map tiles, depending on the selected layer.
 
-| Type | Severity | Description |
-|---|---|---|
-| FIRE DETECTED | Critical | Smoke/flame pixel detection |
-| CROWD STAMPEDE | Critical | Abnormal crowd density model |
-| ARMED THREAT | Critical | Weapon signature classification |
-| VEHICLE ACCIDENT | High | Collision detection |
-| STRUCTURAL COLLAPSE | High | Motion anomaly in building pixels |
-| MEDICAL EMERGENCY | High | Person-down pose estimation |
-| FLOOD RISK | Medium | Water level rise sensor |
-| TRESPASSING | Medium | Perimeter breach detection |
+The browser asks for camera permission when the app starts its webcam feature. If permission is refused, simulated feeds remain available. Do not use the simulated route planner as a real flight-safety system.
 
-All incidents carry a **confidence score** (78–98%) representing AI model certainty.
+## Known limitations and useful next steps
 
----
+1. **No-route handling:** Replace the direct fallback after a failed graph search with an explicit route failure, and block dispatch until a valid path exists.
+2. **NFZ geometry:** Replace sampled segment checks with an exact projected segment-to-circle test; also validate the start/end connector segments.
+3. **Priority queue:** Decide whether incidents should always wait for global priority ordering or dispatch immediately when a drone is idle. Add a unique tie-breaker to the priority key.
+4. **TBST balance and space:** Consider a balanced threaded tree if the queue grows. If demonstrating O(1) traversal workspace, yield nodes one at a time instead of collecting them in an array.
+5. **Tile providers:** The default Esri Dark Gray raster service is a legacy service scheduled for retirement in December 2029 ([Esri retirement notice](https://www.esri.com/arcgis-blog/products/arcgis-living-atlas/announcements/sunsetting-legacy-basemaps)). Plan a migration before then. The OSM option must follow the [current OSM tile policy](https://operations.osmfoundation.org/policies/tiles/).
+6. **Operational realism:** Add altitude, weather, aircraft range, battery constraints, and real flight-safety approvals only as separately validated features.
 
-## Drone Fleet
+## Visual design
 
-| ID | Model | Home Zone | Speed |
-|---|---|---|---|
-| KITE-01 | DJI M30T | Top-left sector | 0.002–0.003 |
-| KITE-02 | DJI M30T | Top-center sector | 0.002–0.003 |
-| HAWK-03 | Parrot Anafi | Top-right sector | 0.002–0.003 |
-| HAWK-04 | Parrot Anafi | Bottom-left sector | 0.002–0.003 |
-| RAVEN-05 | SkyScout X | Bottom-center sector | 0.002–0.003 |
-| RAVEN-06 | SkyScout X | Bottom-right sector | 0.002–0.003 |
+The main dashboard uses the requested Color Hunt palette:
 
-Base positions are distributed evenly across the map for optimal sector coverage. Each drone spawns with 75–100% battery at startup.
+- **#222831** — dominant background.
+- **#393E46** — cards and raised surfaces.
+- **#FF5722** — active, warning, and status accents.
+- **#EEEEEE** — primary readable text.
+
+Interface fonts are Manrope for general UI text and IBM Plex Mono for telemetry and technical labels.
 
 ---
 
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Structure | HTML5 |
-| Styling | CSS3 with custom properties (CSS variables) |
-| Map rendering | Canvas 2D API |
-| Video feeds | Canvas 2D API (procedural animation) |
-| Animation loop | `requestAnimationFrame` (~60fps) |
-| Fonts | Google Fonts (Orbitron, Barlow Condensed, Share Tech Mono) |
-| Dependencies | **None** — fully self-contained |
-
----
-
-## Upgrade Roadmap
-
-### Near-term (add to existing HTML)
-- [ ] **Leaflet.js real map** — swap canvas map for OpenStreetMap tiles
-- [ ] **TensorFlow.js detection** — real COCO-SSD on webcam input
-- [ ] **A\* route optimizer** — pathfinding around no-fly zones
-- [ ] **Battery management** — ground low-battery drones, charge stations
-- [ ] **Weather system** — wind drift affecting drone paths
-
-### Medium-term (requires backend)
-- [ ] **Node.js + WebSocket server** — multi-operator real-time sync
-- [ ] **MongoDB incident history** — persistent logs and analytics
-- [ ] **REST API** — external alert injection endpoint
-- [ ] **JWT authentication** — operator login with roles
-
-### Long-term (major features)
-- [ ] **Three.js 3D map** — full 3D city with Blender `.glb` drone model
-- [ ] **Drone swarm logic** — multi-drone coordinated response
-- [ ] **FPV camera mode** — first-person view following selected drone
-- [ ] **Analytics dashboard** — incident heatmap, response time charts
-- [ ] **Voice commands** — Web Speech API dispatch control
-- [ ] **Mobile app** — React Native operator companion
-
----
-
-## Design System
-
-AEGIS uses a dark tactical aesthetic with a custom CSS variable palette:
-
-| Variable | Value | Usage |
-|---|---|---|
-| `--bg-base` | `#030810` | Page background |
-| `--accent-primary` | `#00e5ff` | Cyan — primary UI accent |
-| `--accent-danger` | `#ff3b3b` | Red — incidents and alerts |
-| `--accent-warn` | `#ffb800` | Amber — warnings, returning drones |
-| `--accent-ok` | `#00ff88` | Green — standby drones, success |
-| `--accent-drone` | `#7b5fff` | Purple — dispatched drone highlights |
-
-Fonts: **Orbitron** (IDs, clock), **Barlow Condensed** (body), **Share Tech Mono** (labels, logs).
-
----
-
-## License
-
-Built for the MIT-ADT University hackathon project: **AI-Powered Autonomous Drone Response for Urban Safety**.  
-Single-file prototype — free to extend, modify, and deploy.
-
----
-
-*AEGIS — Autonomous Emergency Grid & Incident System*  
-*Developed with HTML5 Canvas + Vanilla JS | Zero dependencies | Offline-capable*
+*AEGIS — educational drone-response simulation for the MIT-ADT experiential-learning activity.*
