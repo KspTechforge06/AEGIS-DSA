@@ -4,6 +4,10 @@ AEGIS is a browser-based **drone-response simulation dashboard** set in Pune. It
 
 AEGIS is an educational simulation. It does not communicate with real drones, validate real aviation restrictions, or provide operational flight guidance.
 
+## Dashboard preview
+
+![AEGIS dashboard showing the drone fleet, Pune tactical map, incident queue, and live camera feeds](assets/aegis-dashboard-preview.png)
+
 ## Start here
 
 Open **index.html** for the current AEGIS dashboard. For reliable map tiles and webcam access, serve the folder over HTTP instead of opening the page as a file:
