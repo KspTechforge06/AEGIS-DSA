@@ -5,28 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AEGIS — Urban Drone Response Command</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   :root {
-    --bg-base: #030810;
-    --bg-panel: #060d1a;
-    --bg-card: #091525;
-    --bg-hover: #0d1e35;
-    --accent-primary: #00e5ff;
-    --accent-danger: #ff3b3b;
-    --accent-warn: #ffb800;
-    --accent-ok: #00ff88;
-    --accent-drone: #7b5fff;
-    --grid-line: rgba(0, 229, 255, 0.06);
-    --border: rgba(0, 229, 255, 0.15);
-    --border-hot: rgba(255, 59, 59, 0.5);
-    --text-primary: #e0f4ff;
-    --text-secondary: #5a8aaa;
-    --text-dim: #2a4a65;
-    --glow-cyan: 0 0 20px rgba(0, 229, 255, 0.3);
-    --glow-red: 0 0 20px rgba(255, 59, 59, 0.4);
-    --glow-green: 0 0 20px rgba(0, 255, 136, 0.3);
+    --bg-base: #222831;
+    --bg-panel: #222831;
+    --bg-card: #393e46;
+    --bg-hover: #454b55;
+    --accent-primary: #ff5722;
+    --accent-danger: #ff5722;
+    --accent-warn: #ff5722;
+    --accent-ok: #ff5722;
+    --accent-drone: #ff5722;
+    --grid-line: rgba(57,62,70, 0.45);
+    --border: rgba(57,62,70, 0.85);
+    --border-hot: rgba(255,87,34, 0.5);
+    --text-primary: #eeeeee;
+    --text-secondary: #b8bdc5;
+    --text-dim: #858b95;
+    --glow-gray: 0 0 20px rgba(238,238,238, 0.3);
+    --glow-orange: 0 0 20px rgba(255,87,34, 0.35);
     --col-left: 260px;
     --col-right: 280px;
     --row-bottom: 210px;
@@ -38,7 +37,11 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 400;
+    letter-spacing: 0;
     background: var(--bg-base);
     color: var(--text-primary);
     height: 100vh;
@@ -65,7 +68,7 @@
     padding: 0 24px;
     height: 52px;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(90deg, rgba(0,229,255,0.04), transparent, rgba(0,229,255,0.04));
+    background: linear-gradient(90deg, rgba(238,238,238,0.04), transparent, rgba(238,238,238,0.04));
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
@@ -87,25 +90,25 @@
   .brand-logo svg { width: 100%; height: 100%; }
 
   .brand-name {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 6px;
+    font-weight: 800;
+    letter-spacing: 3.3px;
     color: var(--accent-primary);
-    text-shadow: var(--glow-cyan);
+    text-shadow: var(--glow-gray);
   }
 
   .brand-sub {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     color: var(--text-secondary);
-    letter-spacing: 2px;
+    letter-spacing: 1.1px;
   }
 
   .header-status { display: flex; gap: 24px; align-items: center; }
 
   .hstat {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     color: var(--text-secondary);
     display: flex;
@@ -124,10 +127,10 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
   .clock {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 14px;
     color: var(--accent-primary);
-    letter-spacing: 2px;
+    letter-spacing: 1.1px;
   }
 
   /* MAIN LAYOUT */
@@ -184,23 +187,23 @@
   }
 
   .panel-title {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
-    letter-spacing: 3px;
+    letter-spacing: 1.65px;
     color: var(--text-secondary);
     text-transform: uppercase;
   }
 
   .panel-badge {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     padding: 2px 8px;
     border-radius: 2px;
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
-  .badge-red { background: rgba(255,59,59,0.15); color: var(--accent-danger); border: 1px solid rgba(255,59,59,0.3); }
-  .badge-cyan { background: rgba(0,229,255,0.08); color: var(--accent-primary); border: 1px solid rgba(0,229,255,0.2); }
-  .badge-green { background: rgba(0,255,136,0.08); color: var(--accent-ok); border: 1px solid rgba(0,255,136,0.2); }
+  .badge-red { background: rgba(255,87,34,0.15); color: var(--accent-danger); border: 1px solid rgba(255,87,34,0.3); }
+  .badge-cyan { background: rgba(238,238,238,0.08); color: var(--accent-primary); border: 1px solid rgba(238,238,238,0.2); }
+  .badge-green { background: rgba(255,87,34,0.08); color: var(--accent-ok); border: 1px solid rgba(255,87,34,0.2); }
 
   /* LEFT PANEL */
   .fleet-panel {
@@ -234,22 +237,22 @@
   .drone-card.dispatched::before { background: var(--accent-drone); animation: pulse 1s infinite; }
   .drone-card.alert::before { background: var(--accent-danger); animation: pulse 0.5s infinite; }
   .drone-card.low-battery::before { background: var(--accent-warn); }
-  .drone-card:hover { background: var(--bg-hover); border-color: rgba(0,229,255,0.3); }
+  .drone-card:hover { background: var(--bg-hover); border-color: rgba(238,238,238,0.3); }
 
   .drone-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .drone-id { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .drone-id { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); }
 
   .drone-status-tag {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     padding: 2px 6px;
     border-radius: 2px;
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
-  .status-standby { background: rgba(0,255,136,0.1); color: var(--accent-ok); border: 1px solid rgba(0,255,136,0.25); }
-  .status-dispatched { background: rgba(123,95,255,0.2); color: #a78bfa; border: 1px solid rgba(123,95,255,0.4); animation: pulse 1.5s infinite; }
-  .status-returning { background: rgba(255,184,0,0.1); color: var(--accent-warn); border: 1px solid rgba(255,184,0,0.3); }
-  .status-charging { background: rgba(90,138,170,0.1); color: var(--text-secondary); border: 1px solid rgba(90,138,170,0.2); }
+  .status-standby { background: rgba(255,87,34,0.1); color: var(--accent-ok); border: 1px solid rgba(255,87,34,0.25); }
+  .status-dispatched { background: rgba(255,87,34,0.2); color: #ff5722; border: 1px solid rgba(255,87,34,0.4); animation: pulse 1.5s infinite; }
+  .status-returning { background: rgba(255,87,34,0.1); color: var(--accent-warn); border: 1px solid rgba(255,87,34,0.3); }
+  .status-charging { background: rgba(184,189,197,0.1); color: var(--text-secondary); border: 1px solid rgba(184,189,197,0.2); }
 
   .drone-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .metric { font-size: 11px; color: var(--text-secondary); }
@@ -257,7 +260,7 @@
 
   .battery-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-top: 8px; overflow: hidden; }
   .battery-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
-  .bat-high { background: var(--accent-ok); box-shadow: 0 0 6px rgba(0,255,136,0.5); }
+  .bat-high { background: var(--accent-ok); box-shadow: 0 0 6px rgba(255,87,34,0.5); }
   .bat-mid { background: var(--accent-warn); }
   .bat-low { background: var(--accent-danger); }
 
@@ -276,15 +279,17 @@
   }
 
   /* Leaflet dark theme overrides */
-  .leaflet-container { background: #030810 !important; }
+  .leaflet-container { background: #222831 !important; }
   .leaflet-tile-pane { filter: brightness(1.05) saturate(0.85); }
-  .leaflet-control-zoom, .leaflet-control-attribution { display: none !important; }
+  .leaflet-control-zoom { display: none !important; }
+  .leaflet-control-attribution { display: block !important; background: rgba(34,40,49,.78) !important; color: #c3c6cb !important; font-size: 9px !important; }
+  .leaflet-control-attribution a { color: #eeeeee !important; }
 
   .drone-ltooltip {
-    background: rgba(3,8,16,0.92) !important;
-    border: 1px solid rgba(0,229,255,0.35) !important;
-    color: #00e5ff !important;
-    font-family: 'Orbitron', monospace !important;
+    background: rgba(34,40,49,0.92) !important;
+    border: 1px solid rgba(238,238,238,0.35) !important;
+    color: #eeeeee !important;
+    font-family: 'Manrope', sans-serif !important;
     font-size: 8px !important;
     border-radius: 2px !important;
     box-shadow: none !important;
@@ -294,10 +299,10 @@
   .drone-ltooltip::before { display: none !important; }
 
   .leaflet-popup-content-wrapper {
-    background: rgba(3,8,16,0.96) !important;
-    border: 1px solid rgba(255,59,59,0.45) !important;
+    background: rgba(34,40,49,0.96) !important;
+    border: 1px solid rgba(255,87,34,0.45) !important;
     border-radius: 2px !important;
-    box-shadow: 0 0 20px rgba(255,59,59,0.2) !important;
+    box-shadow: 0 0 20px rgba(255,87,34,0.2) !important;
   }
   .leaflet-popup-content { color: var(--text-primary) !important; margin: 0 !important; }
   .leaflet-popup-tip-container { display: none !important; }
@@ -338,11 +343,11 @@
   }
 
   .map-tag {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     color: var(--text-secondary);
-    letter-spacing: 2px;
-    background: rgba(6,13,26,0.85);
+    letter-spacing: 1.1px;
+    background: rgba(57,62,70,0.85);
     padding: 3px 8px;
     border: 1px solid var(--border);
     backdrop-filter: blur(4px);
@@ -351,10 +356,10 @@
   .coords-display {
     position: absolute;
     bottom: 12px; left: 12px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     color: var(--text-secondary);
-    background: rgba(6,13,26,0.9);
+    background: rgba(57,62,70,0.9);
     padding: 6px 12px;
     border: 1px solid var(--border);
     z-index: 500;
@@ -364,7 +369,7 @@
   .map-legend {
     position: absolute;
     bottom: 12px; right: 12px;
-    background: rgba(6,13,26,0.9);
+    background: rgba(57,62,70,0.9);
     border: 1px solid var(--border);
     padding: 8px 12px;
     display: flex;
@@ -373,7 +378,7 @@
     z-index: 500;
     pointer-events: none;
   }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-secondary); }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
   /* RIGHT PANEL */
@@ -398,35 +403,35 @@
   @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform:none; } }
 
   .incident-card.critical {
-    border-color: rgba(255,59,59,0.3);
-    background: rgba(255,59,59,0.04);
+    border-color: rgba(255,87,34,0.3);
+    background: rgba(255,87,34,0.04);
   }
   .incident-card.critical::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255,59,59,0.04), transparent);
+    background: linear-gradient(135deg, rgba(255,87,34,0.04), transparent);
     pointer-events: none;
   }
 
   .inc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-  .inc-type { font-size: 12px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
+  .inc-type { font-size: 12px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.275px; }
 
   .severity-tag {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 8px;
     padding: 2px 6px;
     border-radius: 1px;
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
-  .sev-critical { background: rgba(255,59,59,0.2); color: #ff6b6b; border: 1px solid rgba(255,59,59,0.4); }
-  .sev-high { background: rgba(255,184,0,0.15); color: var(--accent-warn); border: 1px solid rgba(255,184,0,0.3); }
-  .sev-medium { background: rgba(0,229,255,0.1); color: var(--accent-primary); border: 1px solid rgba(0,229,255,0.2); }
+  .sev-critical { background: rgba(255,87,34,0.2); color: #ff5722; border: 1px solid rgba(255,87,34,0.4); }
+  .sev-high { background: rgba(255,87,34,0.15); color: var(--accent-warn); border: 1px solid rgba(255,87,34,0.3); }
+  .sev-medium { background: rgba(238,238,238,0.1); color: var(--accent-primary); border: 1px solid rgba(238,238,238,0.2); }
 
-  .inc-location { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--text-secondary); margin-bottom: 4px; }
+  .inc-location { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-secondary); margin-bottom: 4px; }
   .inc-dispatch { display: flex; justify-content: space-between; align-items: center; }
-  .inc-drone-assigned { font-family: 'Orbitron', monospace; font-size: 10px; color: var(--accent-drone); }
-  .inc-eta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent-ok); }
+  .inc-drone-assigned { font-family: 'Manrope', sans-serif; font-size: 10px; color: var(--accent-drone); }
+  .inc-eta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent-ok); }
 
   /* BOTTOM PANELS */
   .video-panel {
@@ -455,7 +460,7 @@
   }
 
   .feed-slot {
-    background: #000;
+    background: #222831;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -488,7 +493,7 @@
     bottom: 0; left: 0; right: 0;
     background: linear-gradient(transparent, rgba(0,0,0,0.8));
     padding: 4px 8px 4px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     color: var(--text-secondary);
     display: flex;
@@ -503,7 +508,7 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;
-    box-shadow: inset 0 0 20px rgba(255,59,59,0.3);
+    box-shadow: inset 0 0 20px rgba(255,87,34,0.3);
     z-index: 3;
   }
   .feed-slot.alerting .feed-alert-overlay { opacity: 1; animation: borderPulse 0.5s ease-in-out infinite; }
@@ -524,7 +529,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 6px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
   }
 
@@ -549,13 +554,13 @@
     padding: 6px 16px;
     border-top: 1px solid var(--border);
     flex-shrink: 0;
-    background: rgba(0,229,255,0.02);
+    background: rgba(238,238,238,0.02);
   }
 
   .sim-btn {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
-    letter-spacing: 2px;
+    letter-spacing: 1.1px;
     padding: 5px 12px;
     background: transparent;
     border: 1px solid var(--border);
@@ -564,9 +569,9 @@
     transition: all 0.2s;
     text-transform: uppercase;
   }
-  .sim-btn:hover { background: rgba(0,229,255,0.08); border-color: var(--accent-primary); color: var(--accent-primary); }
-  .sim-btn.danger:hover { background: rgba(255,59,59,0.1); border-color: var(--accent-danger); color: var(--accent-danger); }
-  .sim-btn.active { background: rgba(0,229,255,0.12); border-color: var(--accent-primary); color: var(--accent-primary); }
+  .sim-btn:hover { background: rgba(238,238,238,0.08); border-color: var(--accent-primary); color: var(--accent-primary); }
+  .sim-btn.danger:hover { background: rgba(255,87,34,0.1); border-color: var(--accent-danger); color: var(--accent-danger); }
+  .sim-btn.active { background: rgba(238,238,238,0.12); border-color: var(--accent-primary); color: var(--accent-primary); }
 
   /* Stats strip */
   .stat-strip {
@@ -579,7 +584,7 @@
     height: 24px;
     background: rgba(0,0,0,0.3);
   }
-  .sstrip { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--text-dim); display: flex; gap: 6px; }
+  .sstrip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-dim); display: flex; gap: 6px; }
   .sstrip span { color: var(--text-secondary); }
 
   /* Collapse controls */
@@ -589,7 +594,7 @@
     border: 1px solid var(--text-dim);
     color: var(--text-dim);
     cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
@@ -597,16 +602,16 @@
     line-height: 1;
     padding: 0;
   }
-  .collapse-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: rgba(0,229,255,0.06); }
+  .collapse-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: rgba(238,238,238,0.06); }
 
   .ph-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .ph-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
   .panel-vtitle {
     display: none;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
-    letter-spacing: 3px;
+    letter-spacing: 1.65px;
     color: var(--text-secondary);
     writing-mode: vertical-rl;
     transform: rotate(180deg);
@@ -660,17 +665,17 @@
   /* Incident popup on map */
   .incident-popup {
     position: absolute;
-    background: rgba(3,8,16,0.96);
+    background: rgba(34,40,49,0.96);
     border: 1px solid var(--border-hot);
     padding: 10px 14px;
     pointer-events: none;
     min-width: 160px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     z-index: 500;
-    box-shadow: var(--glow-red);
+    box-shadow: var(--glow-orange);
   }
-  .popup-title { color: var(--accent-danger); font-size: 10px; letter-spacing: 1px; margin-bottom: 6px; }
+  .popup-title { color: var(--accent-danger); font-size: 10px; letter-spacing: 0.55px; margin-bottom: 6px; }
   .popup-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 2px; }
   .popup-key { color: var(--text-dim); }
   .popup-val { color: var(--text-primary); }
@@ -679,14 +684,14 @@
   .ai-live-badge {
     position: absolute;
     top: 6px; right: 6px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 8px;
     padding: 2px 6px;
-    background: rgba(123,95,255,0.2);
-    border: 1px solid rgba(123,95,255,0.5);
-    color: #a78bfa;
+    background: rgba(255,87,34,0.2);
+    border: 1px solid rgba(255,87,34,0.5);
+    color: #ff5722;
     z-index: 2;
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
     animation: pulse 1.5s infinite;
   }
 
@@ -712,7 +717,7 @@
     .sim-btn { flex: 1 1 calc(33% - 10px); padding: 10px; font-size: 11px; text-align: center; }
     header { height: auto; padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
     .header-brand { width: 100%; justify-content: space-between; }
-    .header-status { width: 100%; justify-content: flex-start; gap: 16px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid rgba(0,229,255,0.1); }
+    .header-status { width: 100%; justify-content: flex-start; gap: 16px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid rgba(238,238,238,0.1); }
     .hstat:nth-child(4), .hstat:nth-child(5) { display: none; }
     .incident-popup { max-width: 90%; }
   }
@@ -723,6 +728,8 @@
     .map-legend { display: none; }
     .coords-display { font-size: 9px; padding: 4px 8px; }
     .stat-strip { height: auto; flex-wrap: wrap; padding: 10px 12px; gap: 12px; }
+  }
+
   /* ===================================================================
      DSA & MAP CONTROLS & INSPECTOR MODAL
      =================================================================== */
@@ -739,10 +746,10 @@
   }
 
   .map-ctrl-btn {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
-    letter-spacing: 1px;
-    background: rgba(6, 13, 26, 0.9);
+    letter-spacing: 0.55px;
+    background: rgba(57,62,70, 0.9);
     border: 1px solid var(--border);
     color: var(--text-secondary);
     padding: 5px 10px;
@@ -757,33 +764,33 @@
   .map-ctrl-btn:hover {
     border-color: var(--accent-primary);
     color: var(--text-primary);
-    box-shadow: 0 0 10px rgba(0,229,255,0.25);
+    box-shadow: 0 0 10px rgba(238,238,238,0.25);
   }
   .map-ctrl-btn.active {
-    background: rgba(0, 229, 255, 0.12);
+    background: rgba(238,238,238, 0.12);
     border-color: var(--accent-primary);
     color: var(--accent-primary);
-    box-shadow: 0 0 12px rgba(0,229,255,0.3);
+    box-shadow: 0 0 12px rgba(238,238,238,0.3);
   }
   .map-ctrl-btn.highlight {
-    background: rgba(255, 184, 0, 0.1);
+    background: rgba(255,87,34, 0.1);
     border-color: var(--accent-warn);
     color: var(--accent-warn);
   }
   .map-ctrl-btn.highlight:hover {
-    box-shadow: 0 0 12px rgba(255,184,0,0.4);
-    color: #fff;
+    box-shadow: 0 0 12px rgba(255,87,34,0.4);
+    color: #eeeeee;
   }
 
   .map-layer-switcher {
     display: flex;
-    background: rgba(6, 13, 26, 0.92);
+    background: rgba(57,62,70, 0.92);
     border: 1px solid var(--border);
     border-radius: 2px;
     overflow: hidden;
   }
   .layer-btn {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     background: transparent;
     border: none;
@@ -794,7 +801,7 @@
   }
   .layer-btn:hover { color: var(--text-primary); }
   .layer-btn.active {
-    background: rgba(0, 229, 255, 0.2);
+    background: rgba(238,238,238, 0.2);
     color: var(--accent-primary);
     font-weight: bold;
   }
@@ -803,7 +810,7 @@
   .dsa-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(3, 8, 16, 0.85);
+    background: rgba(34,40,49, 0.85);
     backdrop-filter: blur(8px);
     z-index: 10000;
     display: none;
@@ -818,7 +825,7 @@
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 0 40px rgba(0, 229, 255, 0.25);
+    box-shadow: 0 0 40px rgba(238,238,238, 0.25);
     width: 100%;
     max-width: 960px;
     max-height: 88vh;
@@ -832,25 +839,25 @@
     justify-content: space-between;
     align-items: center;
     padding: 14px 20px;
-    background: rgba(0, 229, 255, 0.05);
+    background: rgba(238,238,238, 0.05);
     border-bottom: 1px solid var(--border);
   }
   .dsa-title-wrap { display: flex; flex-direction: column; gap: 2px; }
   .dsa-modal-title {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 15px;
     font-weight: 700;
     color: var(--accent-primary);
-    letter-spacing: 1.5px;
+    letter-spacing: 0.825px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .dsa-modal-sub {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     color: var(--text-secondary);
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
   .dsa-close-btn {
     background: transparent;
@@ -869,20 +876,20 @@
   .dsa-close-btn:hover {
     border-color: var(--accent-danger);
     color: var(--accent-danger);
-    box-shadow: 0 0 10px rgba(255,59,59,0.3);
+    box-shadow: 0 0 10px rgba(255,87,34,0.3);
   }
 
   .dsa-tabs-bar {
     display: flex;
-    background: rgba(6, 13, 26, 0.95);
+    background: rgba(57,62,70, 0.95);
     border-bottom: 1px solid var(--border);
     padding: 0 16px;
     gap: 8px;
   }
   .dsa-tab-btn {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
     padding: 12px 16px;
     background: transparent;
     border: none;
@@ -895,7 +902,7 @@
   .dsa-tab-btn.active {
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
-    background: rgba(0, 229, 255, 0.04);
+    background: rgba(238,238,238, 0.04);
   }
 
   .dsa-modal-body {
@@ -908,14 +915,14 @@
   }
 
   .dsa-theory-card {
-    background: rgba(0, 229, 255, 0.03);
-    border: 1px solid rgba(0, 229, 255, 0.2);
+    background: rgba(238,238,238, 0.03);
+    border: 1px solid rgba(238,238,238, 0.2);
     border-left: 3px solid var(--accent-primary);
     padding: 12px 16px;
     border-radius: 2px;
   }
   .dsa-theory-title {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 11px;
     font-weight: 700;
     color: var(--accent-primary);
@@ -925,7 +932,7 @@
     gap: 6px;
   }
   .dsa-theory-desc {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     line-height: 1.5;
     color: var(--text-primary);
@@ -946,14 +953,14 @@
     gap: 4px;
   }
   .dsa-stat-label {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     color: var(--text-secondary);
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
     text-transform: uppercase;
   }
   .dsa-stat-val {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--accent-primary);
@@ -974,62 +981,62 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(0,229,255,0.08);
+    border-bottom: 1px solid rgba(238,238,238,0.08);
     padding-bottom: 8px;
   }
   .dsa-card-title {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Manrope', sans-serif;
     font-size: 11px;
     font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
 
   .dsa-table-wrap {
     overflow-x: auto;
-    border: 1px solid rgba(0,229,255,0.1);
+    border: 1px solid rgba(238,238,238,0.1);
     border-radius: 2px;
   }
   .dsa-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     text-align: left;
   }
   .dsa-table th {
-    background: rgba(0, 229, 255, 0.08);
+    background: rgba(238,238,238, 0.08);
     color: var(--accent-primary);
     padding: 8px 10px;
     border-bottom: 1px solid var(--border);
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.275px;
   }
   .dsa-table td {
     padding: 7px 10px;
-    border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+    border-bottom: 1px solid rgba(238,238,238, 0.06);
     color: var(--text-primary);
   }
-  .dsa-table tr:hover { background: rgba(0, 229, 255, 0.03); }
+  .dsa-table tr:hover { background: rgba(238,238,238, 0.03); }
   .thread-tag {
     font-size: 8px;
     padding: 1px 5px;
     border-radius: 2px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.275px;
   }
-  .thread-tag.yes { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
-  .thread-tag.no { background: rgba(90,138,170,0.15); color: #5a8aaa; border: 1px solid rgba(90,138,170,0.3); }
+  .thread-tag.yes { background: rgba(255,87,34,0.15); color: #ff5722; border: 1px solid rgba(255,87,34,0.3); }
+  .thread-tag.no { background: rgba(184,189,197,0.15); color: #b8bdc5; border: 1px solid rgba(184,189,197,0.3); }
 
   .tree-ascii-box {
-    background: #02050b;
-    border: 1px solid rgba(0,229,255,0.15);
+    background: #222831;
+    border: 1px solid rgba(238,238,238,0.15);
     border-radius: 2px;
     padding: 12px;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     line-height: 1.5;
-    color: #a0d8ef;
+    color: #eeeeee;
     max-height: 200px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -1047,16 +1054,16 @@
     gap: 4px;
   }
   .route-label {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     color: var(--text-secondary);
-    letter-spacing: 1px;
+    letter-spacing: 0.55px;
   }
   .route-select {
     background: var(--bg-card);
     border: 1px solid var(--border);
     color: var(--text-primary);
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
     padding: 7px 10px;
     border-radius: 2px;
@@ -1076,13 +1083,13 @@
   <div class="header-brand">
     <div class="brand-logo">
       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="16,2 30,12 30,20 16,30 2,20 2,12" fill="none" stroke="#00e5ff" stroke-width="1.5" opacity="0.6"/>
-        <circle cx="16" cy="16" r="5" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
-        <circle cx="16" cy="16" r="2" fill="#00e5ff"/>
-        <line x1="16" y1="2" x2="16" y2="11" stroke="#00e5ff" stroke-width="1" opacity="0.5"/>
-        <line x1="16" y1="21" x2="16" y2="30" stroke="#00e5ff" stroke-width="1" opacity="0.5"/>
-        <line x1="2" y1="12" x2="11" y2="14.5" stroke="#00e5ff" stroke-width="1" opacity="0.5"/>
-        <line x1="21" y1="17.5" x2="30" y2="20" stroke="#00e5ff" stroke-width="1" opacity="0.5"/>
+        <polygon points="16,2 30,12 30,20 16,30 2,20 2,12" fill="none" stroke="#eeeeee" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="16" cy="16" r="5" fill="none" stroke="#eeeeee" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="2" fill="#eeeeee"/>
+        <line x1="16" y1="2" x2="16" y2="11" stroke="#eeeeee" stroke-width="1" opacity="0.5"/>
+        <line x1="16" y1="21" x2="16" y2="30" stroke="#eeeeee" stroke-width="1" opacity="0.5"/>
+        <line x1="2" y1="12" x2="11" y2="14.5" stroke="#eeeeee" stroke-width="1" opacity="0.5"/>
+        <line x1="21" y1="17.5" x2="30" y2="20" stroke="#eeeeee" stroke-width="1" opacity="0.5"/>
       </svg>
     </div>
     <div>
@@ -1145,12 +1152,12 @@
         </div>
         <div class="coords-display" id="coordsDisplay">LAT: 18.5204° N | LNG: 73.8567° E | ALT: 580m</div>
         <div class="map-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div> DRONE STANDBY</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#7b5fff"></div> DRONE ACTIVE</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#ff3b3b"></div> INCIDENT SITE</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#ffb800"></div> PATROL ZONE</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#00e5ff"></div> AIR CORRIDOR (GRAPH)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#ff0055"></div> NO-FLY ZONE (NFZ)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> DRONE STANDBY</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> DRONE ACTIVE</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> INCIDENT SITE</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> PATROL ZONE</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#eeeeee"></div> AIR CORRIDOR (GRAPH)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> NO-FLY ZONE (NFZ)</div>
         </div>
       </div>
 
@@ -1167,7 +1174,7 @@
           <div class="panel-vtitle">INCIDENT QUEUE</div>
         </div>
         <div class="incident-list" id="incidentList">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;padding:20px;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;padding:20px;">
             MONITORING — NO INCIDENTS<br><br>
             <span style="font-size:9px">System is actively scanning all feeds</span>
           </div>
@@ -1219,7 +1226,7 @@
 <!-- ===================================================================
      DSA INSPECTOR MODAL (THREADED BINARY TREE & GRAPH ROUTING)
      =================================================================== -->
-<div class="dsa-modal-backdrop" id="dsaModalBackdrop" onclick="if(event.target===this) closeDsaModal()">
+<div class="dsa-modal-backdrop" id="dsaModalBackdrop" style="display:none;" onclick="if(event.target===this) closeDsaModal()">
   <div class="dsa-modal" role="dialog" aria-modal="true">
     <div class="dsa-modal-header">
       <div class="dsa-title-wrap">
@@ -1280,7 +1287,7 @@
               <button class="sim-btn" style="font-size:9px;padding:3px 8px;" onclick="renderTbtInspector()">↻ REFRESH</button>
             </div>
           </div>
-          <div id="tbtSequenceView" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-secondary);padding:6px;background:rgba(0,0,0,0.3);border-radius:2px;overflow-x:auto;white-space:nowrap;">
+          <div id="tbtSequenceView" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-secondary);padding:6px;background:rgba(0,0,0,0.3);border-radius:2px;overflow-x:auto;white-space:nowrap;">
             Tree is currently empty. Dispatch or simulate incidents to populate the Threaded BST.
           </div>
         </div>
@@ -1354,7 +1361,7 @@
             </div>
             <button class="sim-btn" style="padding:8px 14px;align-self:flex-end;" onclick="testCustomRoute()">⚡ COMPUTE & PLOT</button>
           </div>
-          <div id="routeResultBox" style="display:none;background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.2);padding:12px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:11px;"></div>
+          <div id="routeResultBox" style="display:none;background:rgba(238,238,238,0.04);border:1px solid rgba(238,238,238,0.2);padding:12px;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;"></div>
         </div>
 
         <div class="dsa-stat-grid">
@@ -1400,21 +1407,21 @@
                   <td>Primary emergency corridor routing with NFZ avoidance</td>
                 </tr>
                 <tr>
-                  <td style="color:#00ff88;font-weight:bold;">Dijkstra's</td>
+                  <td style="color:#ff5722;font-weight:bold;">Dijkstra's</td>
                   <td>O((V + E) log V)</td>
                   <td>O(V)</td>
                   <td>Guaranteed shortest total distance</td>
                   <td>Multi-drone battery-constrained path computation</td>
                 </tr>
                 <tr>
-                  <td style="color:#ffb800;font-weight:bold;">BFS Traversal</td>
+                  <td style="color:#ff5722;font-weight:bold;">BFS Traversal</td>
                   <td>O(V + E)</td>
                   <td>O(V)</td>
                   <td>Optimal for unweighted minimum hops</td>
                   <td>Perimeter search, flood grid sweeps, radio relay hops</td>
                 </tr>
                 <tr>
-                  <td style="color:#7b5fff;font-weight:bold;">Threaded BST</td>
+                  <td style="color:#ff5722;font-weight:bold;">Threaded BST</td>
                   <td>O(log N) insert/delete</td>
                   <td>O(1) auxiliary traversal</td>
                   <td>Strict priority order</td>
@@ -1757,7 +1764,7 @@ const NO_FLY_ZONES = [
     lat: 18.5780,
     lng: 73.9195,
     radius: 1250, // meters
-    color: '#ff0055',
+    color: '#ff5722',
     desc: 'Defense / Civil Exclusion Zone (Flight Prohibited)'
   },
   {
@@ -1766,7 +1773,7 @@ const NO_FLY_ZONES = [
     lat: 18.5440,
     lng: 73.8340,
     radius: 700,
-    color: '#ff3b3b',
+    color: '#ff5722',
     desc: 'Government High-Security Protected Airspace'
   }
 ];
@@ -1995,26 +2002,34 @@ let nfzGroup = null;
 let currentBaseLayer = null;
 
 const MAP_LAYERS = {
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    subdomains: 'abcd',
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
+  dark: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 16,
+    attribution: '&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS User Community'
   }),
   satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
     attribution: '&copy; Esri World Imagery'
   }),
-  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  osm: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    subdomains: 'abc',
-    attribution: '&copy; OpenStreetMap contributors'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
   })
 };
 
-// Catch and suppress tile network errors gracefully
-Object.values(MAP_LAYERS).forEach(layer => {
+// Report tile failures instead of silently hiding provider errors.
+const reportedTileErrors = new WeakSet();
+Object.entries(MAP_LAYERS).forEach(([layerKey, layer]) => {
   layer.on('tileerror', function() {
-    // Suppress console crash and gracefully handle
+    if (reportedTileErrors.has(layer)) return;
+    reportedTileErrors.add(layer);
+    const message = `MAP: ${layerKey.toUpperCase()} tiles failed to load. Check internet access or select another layer.`;
+    console.warn(message);
+    if (currentBaseLayer === layer && layerKey !== 'dark' && leafletMap) {
+      setMapBaseLayer('dark');
+      if (typeof addLog === 'function') addLog(`${message} Switched back to DARK.`, 'warn');
+      return;
+    }
+    if (typeof addLog === 'function') addLog(message, 'warn');
   });
 });
 
@@ -2047,10 +2062,10 @@ function initCorridorVisualLayers() {
       weight: 2,
       dashArray: '6 6',
     }).addTo(nfzGroup).bindPopup(`
-      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px;min-width:180px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:6px;min-width:180px;">
         <div style="color:${nfz.color};font-weight:bold;margin-bottom:4px;">⚠ ${nfz.name}</div>
-        <div style="color:#e0f4ff;margin-bottom:4px;">${nfz.desc}</div>
-        <div style="color:#5a8aaa;">RADIUS: ${nfz.radius}m | EXCLUSION ACTIVE</div>
+        <div style="color:#eeeeee;margin-bottom:4px;">${nfz.desc}</div>
+        <div style="color:#b8bdc5;">RADIUS: ${nfz.radius}m | EXCLUSION ACTIVE</div>
       </div>
     `);
   });
@@ -2059,7 +2074,7 @@ function initCorridorVisualLayers() {
   CORRIDOR_EDGES.forEach(([u, v]) => {
     const n1 = CORRIDOR_NODES[u], n2 = CORRIDOR_NODES[v];
     L.polyline([[n1.lat, n1.lng], [n2.lat, n2.lng]], {
-      color: '#00e5ff',
+      color: '#eeeeee',
       weight: 1.5,
       opacity: 0.35,
       dashArray: '4 6'
@@ -2071,8 +2086,8 @@ function initCorridorVisualLayers() {
     const n = CORRIDOR_NODES[k];
     L.circleMarker([n.lat, n.lng], {
       radius: 3.5,
-      color: '#00e5ff',
-      fillColor: '#030810',
+      color: '#eeeeee',
+      fillColor: '#222831',
       fillOpacity: 0.9,
       weight: 1.5
     }).addTo(corridorGroup).bindTooltip(`AIR CORRIDOR: ${n.name}`, {
@@ -2130,11 +2145,11 @@ function initLeafletMap() {
       center: [18.5204, 73.8567],
       zoom: 13,
       zoomControl: false,
-      attributionControl: false,
+      attributionControl: true,
       preferCanvas: true,
     });
 
-    // Primary dark tactical layer (CartoDB Dark Matter)
+    // Primary dark tactical layer (Esri raster tiles; avoids CARTO key and OSM file-origin restrictions)
     currentBaseLayer = MAP_LAYERS.dark;
     currentBaseLayer.addTo(leafletMap);
 
@@ -2145,7 +2160,7 @@ function initLeafletMap() {
         blur: 35,
         maxZoom: 15,
         max: 1.0,
-        gradient: { 0.3: '#001f4d', 0.5: '#ffb800', 0.75: '#ff6600', 1.0: '#ff0000' }
+        gradient: { 0.3: '#222831', 0.5: '#ff5722', 0.75: '#ff5722', 1.0: '#ff5722' }
       }).addTo(leafletMap);
     }
 
@@ -2153,8 +2168,8 @@ function initLeafletMap() {
     FEED_LOCATIONS.forEach(loc => {
       L.circle([loc.lat, loc.lng], {
         radius: 800,
-        color: '#ffb800',
-        fillColor: '#ffb800',
+        color: '#ff5722',
+        fillColor: '#ff5722',
         fillOpacity: 0.04,
         weight: 1,
         opacity: 0.3,
@@ -2167,8 +2182,8 @@ function initLeafletMap() {
       const ll = xy2ll(pos.x, pos.y);
       L.circleMarker(ll, {
         radius: 4,
-        color: '#00e5ff',
-        fillColor: '#00e5ff',
+        color: '#eeeeee',
+        fillColor: '#eeeeee',
         fillOpacity: 0.12,
         weight: 1,
         opacity: 0.4,
@@ -2212,7 +2227,7 @@ function updateDroneCorridorLine(drone, waypoints) {
   const latlngs = [xy2ll(drone.x, drone.y), ...waypoints.map(w => [w.lat, w.lng])];
   if (!droneCorridorPolylines[drone.id]) {
     droneCorridorPolylines[drone.id] = L.polyline(latlngs, {
-      color: '#00e5ff',
+      color: '#eeeeee',
       weight: 2.5,
       opacity: 0.7,
       dashArray: '5 7'
@@ -2230,10 +2245,10 @@ function clearDroneCorridorLine(droneId) {
 }
 
 function getDroneColor(status) {
-  return status === 'standby' ? '#00ff88'
-       : status === 'dispatched' ? '#7b5fff'
-       : status === 'returning' ? '#ffb800'
-       : '#5a8aaa';
+  return status === 'standby' ? '#ff5722'
+       : status === 'dispatched' ? '#ff5722'
+       : status === 'returning' ? '#ff5722'
+       : '#b8bdc5';
 }
 
 function createDroneIcon(drone) {
@@ -2261,9 +2276,9 @@ function createDroneIcon(drone) {
 }
 
 function createIncidentIcon(inc) {
-  const col = inc.severity === 'critical' ? '#ff3b3b'
-            : inc.severity === 'high' ? '#ffb800'
-            : '#00e5ff';
+  const col = inc.severity === 'critical' ? '#ff5722'
+            : inc.severity === 'high' ? '#ff5722'
+            : '#eeeeee';
   return L.divIcon({
     className: '',
     html: `<div class="inc-marker-dot" style="background:${col}22;border:2px solid ${col};box-shadow:0 0 8px ${col}88;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;">${inc.icon}</div>`,
@@ -2295,7 +2310,7 @@ function updateLeafletDrones() {
       const coords = d.trail.map(p => xy2ll(p.x, p.y));
       if (!droneTrailLines[d.id]) {
         droneTrailLines[d.id] = L.polyline(coords, {
-          color: '#7b5fff', weight: 1.5, opacity: 0.4, dashArray: '3 5'
+          color: '#ff5722', weight: 1.5, opacity: 0.4, dashArray: '3 5'
         }).addTo(leafletMap);
       } else {
         droneTrailLines[d.id].setLatLngs(coords);
@@ -2328,11 +2343,11 @@ function updateLeafletIncidents() {
     const ll = xy2ll(inc.x, inc.y);
     const m = L.marker(ll, { icon: createIncidentIcon(inc), zIndexOffset: 1000 }).addTo(leafletMap);
     m.bindPopup(`
-      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px;min-width:160px;">
-        <div style="color:#ff6b6b;font-size:11px;margin-bottom:6px;letter-spacing:1px;">${inc.icon} ${inc.type}</div>
-        <div style="color:#5a8aaa;margin-bottom:2px;">📍 ${inc.location}</div>
-        <div style="color:#5a8aaa;margin-bottom:2px;">${inc.desc}</div>
-        <div style="color:#e0f4ff;">CONF: ${(inc.confidence * 100).toFixed(1)}% | SEV: ${inc.severity.toUpperCase()}</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:8px;min-width:160px;">
+        <div style="color:#ff5722;font-size:11px;margin-bottom:6px;letter-spacing:0.55px;">${inc.icon} ${inc.type}</div>
+        <div style="color:#b8bdc5;margin-bottom:2px;">📍 ${inc.location}</div>
+        <div style="color:#b8bdc5;margin-bottom:2px;">${inc.desc}</div>
+        <div style="color:#eeeeee;">CONF: ${(inc.confidence * 100).toFixed(1)}% | SEV: ${inc.severity.toUpperCase()}</div>
       </div>
     `);
     incidentMarkers[inc.id] = m;
@@ -2523,7 +2538,7 @@ function renderWebcamOverlay(canvas, dt) {
     const conf = pred.score;
     const label = pred.class.toUpperCase();
     const isPerson = pred.class === 'person';
-    const col = isPerson ? '#ff3b3b' : '#00e5ff';
+    const col = isPerson ? '#ff5722' : '#eeeeee';
 
     ctx.strokeStyle = col;
     ctx.lineWidth = 1.5;
@@ -2532,7 +2547,7 @@ function renderWebcamOverlay(canvas, dt) {
     // Corner brackets
     const cs = 8;
     ctx.lineWidth = 2.5;
-    ctx.strokeStyle = isPerson ? '#ff6b6b' : '#00e5ff';
+    ctx.strokeStyle = isPerson ? '#ff5722' : '#eeeeee';
     ctx.beginPath();
     ctx.moveTo(x, y + cs); ctx.lineTo(x, y); ctx.lineTo(x + cs, y);
     ctx.moveTo(x + w - cs, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + cs);
@@ -2545,11 +2560,11 @@ function renderWebcamOverlay(canvas, dt) {
     ctx.fillStyle = 'rgba(0,0,0,0.78)';
     ctx.fillRect(x, y - 14, labelW, 14);
     ctx.fillStyle = col;
-    ctx.font = '8px Share Tech Mono, monospace';
+    ctx.font = '8px IBM Plex Mono, monospace';
     ctx.fillText(`${label} ${(conf * 100).toFixed(0)}%`, x + 3, y - 3);
 
     // Confidence bar
-    ctx.fillStyle = isPerson ? 'rgba(255,59,59,0.25)' : 'rgba(0,229,255,0.2)';
+    ctx.fillStyle = isPerson ? 'rgba(255,87,34,0.25)' : 'rgba(238,238,238,0.2)';
     ctx.fillRect(x, y + h + 1, w, 2);
     ctx.fillStyle = col;
     ctx.fillRect(x, y + h + 1, w * conf, 2);
@@ -2557,14 +2572,14 @@ function renderWebcamOverlay(canvas, dt) {
 
   // Scanline
   const scanY = ((Date.now() * 0.05) % H) | 0;
-  ctx.fillStyle = 'rgba(0,229,255,0.035)';
+  ctx.fillStyle = 'rgba(238,238,238,0.035)';
   ctx.fillRect(0, scanY, W, 2);
 
   // Timestamp
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
   ctx.fillRect(2, 2, 122, 14);
-  ctx.fillStyle = 'rgba(0,229,255,0.75)';
-  ctx.font = '8px Share Tech Mono, monospace';
+  ctx.fillStyle = 'rgba(238,238,238,0.75)';
+  ctx.font = '8px IBM Plex Mono, monospace';
   ctx.fillText(new Date().toLocaleTimeString('en-GB', { hour12: false }), 4, 12);
 }
 
@@ -2911,7 +2926,7 @@ function renderIncidents() {
   dot.style.boxShadow = active.length > 0 ? '0 0 6px var(--accent-danger)' : 'none';
 
   if (active.length === 0) {
-    list.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;padding:20px;">MONITORING — NO INCIDENTS<br><br><span style="font-size:9px">System is actively scanning all feeds</span></div>`;
+    list.innerHTML = `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;padding:20px;">MONITORING — NO INCIDENTS<br><br><span style="font-size:9px">System is actively scanning all feeds</span></div>`;
     updateLeafletIncidents();
     return;
   }
@@ -3039,21 +3054,21 @@ function renderFeed(i, dt) {
 
   // Background gradient
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#0a1520');
-  grad.addColorStop(1, '#050c14');
+  grad.addColorStop(0, '#222831');
+  grad.addColorStop(1, '#222831');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(0,229,255,0.04)';
+  ctx.strokeStyle = 'rgba(238,238,238,0.04)';
   ctx.lineWidth = 1;
   for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
   for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
 
   // Road surface
-  ctx.fillStyle = 'rgba(20,35,55,0.6)';
+  ctx.fillStyle = 'rgba(57,62,70,0.6)';
   ctx.fillRect(0, H * 0.45, W, H * 0.15);
-  ctx.strokeStyle = 'rgba(255,255,200,0.1)';
+  ctx.strokeStyle = 'rgba(238,238,238,0.1)';
   ctx.setLineDash([W * 0.05, W * 0.05]);
   ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(0, H * 0.525); ctx.lineTo(W, H * 0.525); ctx.stroke();
@@ -3063,12 +3078,12 @@ function renderFeed(i, dt) {
   const buildingHeights = [0.5, 0.35, 0.45, 0.3, 0.4, 0.55, 0.35];
   buildingHeights.forEach((h, bi) => {
     const bw = W / buildingHeights.length;
-    ctx.fillStyle = `rgba(10,25,40,${0.8 + bi * 0.02})`;
+    ctx.fillStyle = `rgba(34,40,49,${0.8 + bi * 0.02})`;
     ctx.fillRect(bi * bw + 1, H * (1 - h), bw - 2, H * h);
     for (let wr = 0; wr < 3; wr++) {
       for (let wc = 0; wc < 2; wc++) {
         if (Math.random() > 0.4) {
-          ctx.fillStyle = 'rgba(255,230,100,0.3)';
+          ctx.fillStyle = 'rgba(255,87,34,0.3)';
           ctx.fillRect(bi * bw + 4 + wc * 8, H * (1 - h) + 6 + wr * 10, 5, 4);
         }
       }
@@ -3081,7 +3096,7 @@ function renderFeed(i, dt) {
     if (p.x < 0 || p.x > 1) p.vx *= -1;
     if (p.y < 0.2 || p.y > 0.95) p.vy *= -1;
     const px = p.x * W, py = p.y * H;
-    ctx.fillStyle = 'rgba(150,200,255,0.7)';
+    ctx.fillStyle = 'rgba(238,238,238,0.7)';
     ctx.beginPath(); ctx.arc(px, py - p.size, p.size * 0.6, 0, Math.PI * 2); ctx.fill();
     ctx.fillRect(px - p.size * 0.4, py - p.size, p.size * 0.8, p.size * 1.5);
   }
@@ -3091,28 +3106,28 @@ function renderFeed(i, dt) {
     v.x += v.vx;
     if (v.x < -0.1) v.x = 1.1;
     if (v.x > 1.1) v.x = -0.1;
-    ctx.fillStyle = 'rgba(80,140,200,0.5)';
+    ctx.fillStyle = 'rgba(190,194,201,0.5)';
     ctx.fillRect(v.x * W, v.y * H, v.w, v.h);
-    ctx.fillStyle = 'rgba(255,220,50,0.6)';
+    ctx.fillStyle = 'rgba(255,87,34,0.6)';
     ctx.fillRect(v.vx > 0 ? (v.x * W + v.w - 2) : v.x * W, v.y * H, 2, v.h);
   }
 
   // Timestamp
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillRect(2, 2, 120, 14);
-  ctx.fillStyle = 'rgba(0,229,255,0.7)';
-  ctx.font = '8px Share Tech Mono, monospace';
+  ctx.fillStyle = 'rgba(238,238,238,0.7)';
+  ctx.font = '8px IBM Plex Mono, monospace';
   ctx.fillText(new Date().toLocaleTimeString('en-GB', { hour12: false }), 4, 12);
 
   // Detection boxes
   for (const det of feed.detections) {
     const bx = det.x * W, by = det.y * H, bw = det.w * W, bh = det.h * H;
-    ctx.strokeStyle = '#ff3b3b';
+    ctx.strokeStyle = '#ff5722';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(bx, by, bw, bh);
     const cs = 8;
     ctx.lineWidth = 2.5;
-    ctx.strokeStyle = '#ff6b6b';
+    ctx.strokeStyle = '#ff5722';
     ctx.beginPath();
     ctx.moveTo(bx, by + cs); ctx.lineTo(bx, by); ctx.lineTo(bx + cs, by);
     ctx.moveTo(bx + bw - cs, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cs);
@@ -3121,12 +3136,12 @@ function renderFeed(i, dt) {
     ctx.stroke();
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.fillRect(bx, by - 14, det.label.length * 5.5 + 20, 14);
-    ctx.fillStyle = '#ff6b6b';
-    ctx.font = '8px Share Tech Mono, monospace';
+    ctx.fillStyle = '#ff5722';
+    ctx.font = '8px IBM Plex Mono, monospace';
     ctx.fillText(`${det.label} ${(det.conf * 100).toFixed(0)}%`, bx + 2, by - 3);
-    ctx.fillStyle = 'rgba(255,59,59,0.3)';
+    ctx.fillStyle = 'rgba(255,87,34,0.3)';
     ctx.fillRect(bx, by + bh + 1, bw, 2);
-    ctx.fillStyle = '#ff3b3b';
+    ctx.fillStyle = '#ff5722';
     ctx.fillRect(bx, by + bh + 1, bw * det.conf, 2);
   }
 
@@ -3139,7 +3154,7 @@ function renderFeed(i, dt) {
   const scanY = ((Math.sin(feed.noisePhase) * 0.5 + 0.5) * H) | 0;
   const scanGrad = ctx.createLinearGradient(0, scanY - 3, 0, scanY + 3);
   scanGrad.addColorStop(0, 'transparent');
-  scanGrad.addColorStop(0.5, 'rgba(0,229,255,0.04)');
+  scanGrad.addColorStop(0.5, 'rgba(238,238,238,0.04)');
   scanGrad.addColorStop(1, 'transparent');
   ctx.fillStyle = scanGrad;
   ctx.fillRect(0, scanY - 3, W, 6);
@@ -3366,7 +3381,7 @@ function renderTbtInspector() {
   // Display priority sequence
   seqEl.innerHTML = revInOrder.map((item, idx) => {
     const inc = item.data;
-    const col = inc.severity === 'critical' ? '#ff3b3b' : inc.severity === 'high' ? '#ffb800' : '#00e5ff';
+    const col = inc.severity === 'critical' ? '#ff5722' : inc.severity === 'high' ? '#ff5722' : '#eeeeee';
     return `<span style="background:${col}1a;border:1px solid ${col};color:${col};padding:3px 8px;border-radius:2px;margin-right:6px;font-size:10px;">
       #${idx + 1} [Key ${item.key}] ${inc.type} (${inc.severity.toUpperCase()})
     </span>`;
@@ -3461,14 +3476,14 @@ function testCustomRoute() {
     <div style="color:var(--accent-primary);font-size:12px;margin-bottom:6px;font-weight:bold;">
       ✓ ROUTE COMPUTED: ${route.algo} (${(t1 - t0).toFixed(3)} ms)
     </div>
-    <div style="margin-bottom:4px;color:#e0f4ff;">
+    <div style="margin-bottom:4px;color:#eeeeee;">
       <strong>PATH:</strong> ${route.waypoints.map(w => w.name).join(' ➔ ')}
     </div>
     <div style="display:flex;gap:16px;color:var(--text-secondary);font-size:10px;">
-      <span>CORRIDOR HOPS: <strong style="color:#00ff88">${route.hops}</strong></span>
+      <span>CORRIDOR HOPS: <strong style="color:#ff5722">${route.hops}</strong></span>
       <span>TOTAL DISTANCE: <strong style="color:var(--accent-primary)">${(route.distanceM / 1000).toFixed(2)} km</strong></span>
       <span>NODES EVALUATED: <strong style="color:var(--accent-warn)">${route.evaluatedCount}</strong></span>
-      <span>NFZ STATUS: <strong style="color:#00ff88">COLLISION FREE</strong></span>
+      <span>NFZ STATUS: <strong style="color:#ff5722">COLLISION FREE</strong></span>
     </div>
   `;
 
@@ -3477,7 +3492,7 @@ function testCustomRoute() {
     if (testRoutePolyline) leafletMap.removeLayer(testRoutePolyline);
     const coords = route.waypoints.map(w => [w.lat, w.lng]);
     testRoutePolyline = L.polyline(coords, {
-      color: '#ffb800',
+      color: '#ff5722',
       weight: 3.5,
       opacity: 0.9,
       dashArray: '8 6'

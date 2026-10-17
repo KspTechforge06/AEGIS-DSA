@@ -343,21 +343,30 @@ let simInterval = null;
 const map = L.map('map', { zoomControl: true, attributionControl: true });
 
 const tileLayers = {
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20
+  dark: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS User Community', maxZoom: 16
   }),
   satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: '&copy; Esri &mdash; World Imagery', maxZoom: 19
   }),
-  terrain: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors', subdomains: 'abc', maxZoom: 19
+  terrain: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors', maxZoom: 19
   })
 };
 
-// Catch and suppress tile network errors
-Object.values(tileLayers).forEach(layer => {
+// Report tile failures rather than silently hiding provider errors.
+const reportedTileErrors = new WeakSet();
+Object.entries(tileLayers).forEach(([layerName, layer]) => {
   layer.on('tileerror', function() {
-    // Gracefully ignore tile load failures
+    if (reportedTileErrors.has(layer)) return;
+    reportedTileErrors.add(layer);
+    const message = `Map tiles failed for ${layerName}. Check internet access or select another layer.`;
+    if (activeLayer === layer && layerName !== 'dark') {
+      switchLayer('dark');
+      log(`${message} Switched back to DARK.`, 'error');
+      return;
+    }
+    log(message, 'error');
   });
 });
 
