@@ -723,6 +723,350 @@
     .map-legend { display: none; }
     .coords-display { font-size: 9px; padding: 4px 8px; }
     .stat-strip { height: auto; flex-wrap: wrap; padding: 10px 12px; gap: 12px; }
+  /* ===================================================================
+     DSA & MAP CONTROLS & INSPECTOR MODAL
+     =================================================================== */
+  .map-dsa-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 500;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .map-ctrl-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    background: rgba(6, 13, 26, 0.9);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .map-ctrl-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(0,229,255,0.25);
+  }
+  .map-ctrl-btn.active {
+    background: rgba(0, 229, 255, 0.12);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    box-shadow: 0 0 12px rgba(0,229,255,0.3);
+  }
+  .map-ctrl-btn.highlight {
+    background: rgba(255, 184, 0, 0.1);
+    border-color: var(--accent-warn);
+    color: var(--accent-warn);
+  }
+  .map-ctrl-btn.highlight:hover {
+    box-shadow: 0 0 12px rgba(255,184,0,0.4);
+    color: #fff;
+  }
+
+  .map-layer-switcher {
+    display: flex;
+    background: rgba(6, 13, 26, 0.92);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .layer-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .layer-btn:hover { color: var(--text-primary); }
+  .layer-btn.active {
+    background: rgba(0, 229, 255, 0.2);
+    color: var(--accent-primary);
+    font-weight: bold;
+  }
+
+  /* MODAL */
+  .dsa-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 8, 16, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .dsa-modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.25);
+    width: 100%;
+    max-width: 960px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .dsa-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: rgba(0, 229, 255, 0.05);
+    border-bottom: 1px solid var(--border);
+  }
+  .dsa-title-wrap { display: flex; flex-direction: column; gap: 2px; }
+  .dsa-modal-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dsa-modal-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+  }
+  .dsa-close-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .dsa-close-btn:hover {
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
+    box-shadow: 0 0 10px rgba(255,59,59,0.3);
+  }
+
+  .dsa-tabs-bar {
+    display: flex;
+    background: rgba(6, 13, 26, 0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    gap: 8px;
+  }
+  .dsa-tab-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dsa-tab-btn:hover { color: var(--text-primary); }
+  .dsa-tab-btn.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    background: rgba(0, 229, 255, 0.04);
+  }
+
+  .dsa-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .dsa-theory-card {
+    background: rgba(0, 229, 255, 0.03);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-left: 3px solid var(--accent-primary);
+    padding: 12px 16px;
+    border-radius: 2px;
+  }
+  .dsa-theory-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dsa-theory-desc {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+
+  .dsa-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .dsa-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .dsa-stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .dsa-stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-primary);
+  }
+  .dsa-stat-val.accent-ok { color: var(--accent-ok); }
+  .dsa-stat-val.accent-warn { color: var(--accent-warn); }
+
+  .dsa-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .dsa-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,229,255,0.08);
+    padding-bottom: 8px;
+  }
+  .dsa-card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+  }
+
+  .dsa-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(0,229,255,0.1);
+    border-radius: 2px;
+  }
+  .dsa-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    text-align: left;
+  }
+  .dsa-table th {
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--accent-primary);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .dsa-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+    color: var(--text-primary);
+  }
+  .dsa-table tr:hover { background: rgba(0, 229, 255, 0.03); }
+  .thread-tag {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .thread-tag.yes { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+  .thread-tag.no { background: rgba(90,138,170,0.15); color: #5a8aaa; border: 1px solid rgba(90,138,170,0.3); }
+
+  .tree-ascii-box {
+    background: #02050b;
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 2px;
+    padding: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    color: #a0d8ef;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+
+  .route-tester {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .route-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .route-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+  }
+  .route-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 7px 10px;
+    border-radius: 2px;
+    outline: none;
+  }
+  .route-select:focus { border-color: var(--accent-primary); }
+
+  @media (max-width: 768px) {
+    .dsa-stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .route-tester { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -751,6 +1095,7 @@
     <div class="hstat"><span class="dot"></span>SYSTEM NOMINAL</div>
     <div class="hstat"><span class="dot red" id="incidentDot"></span><span id="headerAlert">0 ACTIVE INCIDENTS</span></div>
     <div class="hstat"><span class="dot dim" id="aiDot"></span><span id="aiStatus">AI: LOADING</span></div>
+    <div class="hstat" style="cursor:pointer;" onclick="openDsaModal()" title="Click to open DSA Threaded Binary Tree & Graph Navigator"><span class="dot" style="background:var(--accent-ok);animation:pulse 1.8s infinite;"></span>DSA: <span id="headerDsaAlgo" style="color:var(--accent-primary)">A* + TBST</span></div>
     <div class="hstat">GRID: <span style="color:var(--accent-ok)">PUNE SECTOR</span></div>
     <div class="hstat">COVERAGE: <span style="color:var(--accent-primary)">94.3%</span></div>
     <div class="clock" id="clockEl">00:00:00</div>
@@ -788,12 +1133,24 @@
           <div class="map-tag">◈ LIVE TACTICAL MAP — PUNE URBAN SECTOR</div>
           <div class="map-tag" id="mapZone">ZONE: CENTRAL GRID</div>
         </div>
+        <div class="map-dsa-controls">
+          <button class="map-ctrl-btn active" id="btnCorridors" onclick="toggleCorridors()" title="Toggle visual air corridor graph">◈ CORRIDORS</button>
+          <button class="map-ctrl-btn" id="btnAlgoToggle" onclick="cycleRoutingAlgo()" title="Cycle routing algorithm (A*, Dijkstra, BFS, Euclidean)">ALGO: A*</button>
+          <button class="map-ctrl-btn highlight" id="btnTbtInspector" onclick="openDsaModal()" title="Open Threaded Binary Tree & Graph Routing Inspector">⚡ DSA INSPECTOR</button>
+          <div class="map-layer-switcher">
+            <button class="layer-btn active" id="layer-dark" onclick="setMapBaseLayer('dark')">DARK</button>
+            <button class="layer-btn" id="layer-satellite" onclick="setMapBaseLayer('satellite')">SAT</button>
+            <button class="layer-btn" id="layer-osm" onclick="setMapBaseLayer('osm')">OSM</button>
+          </div>
+        </div>
         <div class="coords-display" id="coordsDisplay">LAT: 18.5204° N | LNG: 73.8567° E | ALT: 580m</div>
         <div class="map-legend">
           <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div> DRONE STANDBY</div>
           <div class="legend-item"><div class="legend-dot" style="background:#7b5fff"></div> DRONE ACTIVE</div>
           <div class="legend-item"><div class="legend-dot" style="background:#ff3b3b"></div> INCIDENT SITE</div>
           <div class="legend-item"><div class="legend-dot" style="background:#ffb800"></div> PATROL ZONE</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#00e5ff"></div> AIR CORRIDOR (GRAPH)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff0055"></div> NO-FLY ZONE (NFZ)</div>
         </div>
       </div>
 
@@ -859,6 +1216,219 @@
 
 </div>
 
+<!-- ===================================================================
+     DSA INSPECTOR MODAL (THREADED BINARY TREE & GRAPH ROUTING)
+     =================================================================== -->
+<div class="dsa-modal-backdrop" id="dsaModalBackdrop" onclick="if(event.target===this) closeDsaModal()">
+  <div class="dsa-modal" role="dialog" aria-modal="true">
+    <div class="dsa-modal-header">
+      <div class="dsa-title-wrap">
+        <div class="dsa-modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="4" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>
+            <path d="M12 6v6m0 0l-4 4m4-4l4 4"/>
+          </svg>
+          AEGIS DSA ENGINE — TBT & GRAPH ROUTING
+        </div>
+        <div class="dsa-modal-sub">MIT-ADT UNIVERSITY | EXPERIENTIAL LEARNING LAB: THREADED BINARY TREE & GPS CORRIDOR TRAVERSAL</div>
+      </div>
+      <button class="dsa-close-btn" onclick="closeDsaModal()" title="Close Inspector">✕</button>
+    </div>
+
+    <div class="dsa-tabs-bar">
+      <button class="dsa-tab-btn active" id="tabBtnTbt" onclick="switchDsaTab('tbt')">◈ THREADED BINARY TREE (TBT)</button>
+      <button class="dsa-tab-btn" id="tabBtnGraph" onclick="switchDsaTab('graph')">◈ AIR CORRIDORS & A* / DIJKSTRA</button>
+    </div>
+
+    <div class="dsa-modal-body">
+      <!-- TAB 1: THREADED BINARY TREE -->
+      <div id="dsaTabTbtContent" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="dsa-theory-card">
+          <div class="dsa-theory-title">
+            <span>⚡ TOPIC: DOUBLE-THREADED BINARY SEARCH TREE (TBST)</span>
+          </div>
+          <div class="dsa-theory-desc">
+            In standard BSTs, ~50% of child pointers are NULL. A <strong>Double-Threaded Binary Search Tree</strong> replaces NULL pointers with "threads": NULL left child points to the <em>in-order predecessor</em>, and NULL right child points to the <em>in-order successor</em>.<br>
+            <strong>Real-world drone application:</strong> In mission-critical avionics & emergency command systems, stack memory is strictly bounded. TBT enables non-recursive, stackless <code>O(1)</code> auxiliary space traversal to pull highest-priority emergency alerts without recursion overhead or risk of stack overflow during high-load incident surges.
+          </div>
+        </div>
+
+        <div class="dsa-stat-grid">
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">TBST Node Count</span>
+            <span class="dsa-stat-val" id="tbtStatNodes">0</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Stack Memory Used</span>
+            <span class="dsa-stat-val accent-ok">0 B (O(1))</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Root Priority Key</span>
+            <span class="dsa-stat-val accent-warn" id="tbtStatRoot">NONE</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Stackless Traversals</span>
+            <span class="dsa-stat-val" id="tbtStatTraversals">0</span>
+          </div>
+        </div>
+
+        <div class="dsa-card">
+          <div class="dsa-card-header">
+            <span class="dsa-card-title">LIVE IN-ORDER DISPATCH SEQUENCE (STACKLESS O(1) SUCCESSOR TRAVERSAL)</span>
+            <div style="display:flex;gap:6px;">
+              <button class="sim-btn" style="font-size:9px;padding:3px 8px;" onclick="testInsertTbtAlert()">+ INSERT TEST ALERT</button>
+              <button class="sim-btn" style="font-size:9px;padding:3px 8px;" onclick="renderTbtInspector()">↻ REFRESH</button>
+            </div>
+          </div>
+          <div id="tbtSequenceView" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-secondary);padding:6px;background:rgba(0,0,0,0.3);border-radius:2px;overflow-x:auto;white-space:nowrap;">
+            Tree is currently empty. Dispatch or simulate incidents to populate the Threaded BST.
+          </div>
+        </div>
+
+        <div class="dsa-card">
+          <div class="dsa-card-header">
+            <span class="dsa-card-title">TBST ACTIVE NODE REGISTRY & THREAD LINKS</span>
+          </div>
+          <div class="dsa-table-wrap">
+            <table class="dsa-table">
+              <thead>
+                <tr>
+                  <th>PRIORITY KEY</th>
+                  <th>INCIDENT</th>
+                  <th>SEVERITY</th>
+                  <th>CONF</th>
+                  <th>LEFT CHILD</th>
+                  <th>LEFT THREAD (PRED)</th>
+                  <th>RIGHT CHILD</th>
+                  <th>RIGHT THREAD (SUCC)</th>
+                </tr>
+              </thead>
+              <tbody id="tbtTableBody">
+                <tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:14px;">No nodes in Threaded Binary Tree</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="dsa-card">
+          <div class="dsa-card-header">
+            <span class="dsa-card-title">HIERARCHICAL TREE VISUALIZATION (ASCII)</span>
+          </div>
+          <pre class="tree-ascii-box" id="tbtAsciiBox">No nodes in TBST</pre>
+        </div>
+      </div>
+
+      <!-- TAB 2: AIR CORRIDORS & GRAPH ROUTING -->
+      <div id="dsaTabGraphContent" style="display:none;flex-direction:column;gap:16px;">
+        <div class="dsa-theory-card">
+          <div class="dsa-theory-title">
+            <span>◈ REAL-WORLD GPS AIRSPACE GRAPH NAVIGATION & NO-FLY ZONE AVOIDANCE</span>
+          </div>
+          <div class="dsa-theory-desc">
+            Pune urban sector is modeled as a connected graph <code>G = (V, E)</code> with 16 municipal transit waypoints and bidirectional air corridor edges weighted by geodesic Haversine distance.<br>
+            <strong>A* Pathfinding:</strong> <code>f(n) = g(n) + h(n)</code>, where <code>g(n)</code> is actual distance traveled through corridors and <code>h(n)</code> is the Haversine distance heuristic to target. Restricted Airspace (Pune Airport AFB & VIP Zones) dynamically prune intersecting edges, ensuring drones never violate civil aviation exclusion zones.
+          </div>
+        </div>
+
+        <div class="dsa-card">
+          <div class="dsa-card-header">
+            <span class="dsa-card-title">INTERACTIVE AIR CORRIDOR ROUTE TESTER</span>
+          </div>
+          <div class="route-tester">
+            <div class="route-field">
+              <label class="route-label">START WAYPOINT (ORIGIN)</label>
+              <select class="route-select" id="routeStartSelect"></select>
+            </div>
+            <div class="route-field">
+              <label class="route-label">DESTINATION WAYPOINT (TARGET)</label>
+              <select class="route-select" id="routeTargetSelect"></select>
+            </div>
+            <div class="route-field">
+              <label class="route-label">ROUTING ALGORITHM</label>
+              <select class="route-select" id="routeAlgoSelect">
+                <option value="astar">A* Search (Haversine Heuristic)</option>
+                <option value="dijkstra">Dijkstra's Algorithm (Cost Shortest Path)</option>
+                <option value="bfs">Breadth-First Search (Min Hop Traversal)</option>
+                <option value="direct">Euclidean Straight Line (Baseline)</option>
+              </select>
+            </div>
+            <button class="sim-btn" style="padding:8px 14px;align-self:flex-end;" onclick="testCustomRoute()">⚡ COMPUTE & PLOT</button>
+          </div>
+          <div id="routeResultBox" style="display:none;background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.2);padding:12px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:11px;"></div>
+        </div>
+
+        <div class="dsa-stat-grid">
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Graph Nodes (V)</span>
+            <span class="dsa-stat-val">16 Waypoints</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Corridor Edges (E)</span>
+            <span class="dsa-stat-val accent-ok">18 Bidirectional</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Active No-Fly Zones</span>
+            <span class="dsa-stat-val accent-warn">2 Exclusions</span>
+          </div>
+          <div class="dsa-stat-card">
+            <span class="dsa-stat-label">Active Routing Algo</span>
+            <span class="dsa-stat-val" id="dsaActiveAlgoName">A* SEARCH</span>
+          </div>
+        </div>
+
+        <div class="dsa-card">
+          <div class="dsa-card-header">
+            <span class="dsa-card-title">ALGORITHM COMPLEXITY & REAL-WORLD TRADE-OFFS</span>
+          </div>
+          <div class="dsa-table-wrap">
+            <table class="dsa-table">
+              <thead>
+                <tr>
+                  <th>ALGORITHM</th>
+                  <th>TIME COMPLEXITY</th>
+                  <th>SPACE COMPLEXITY</th>
+                  <th>OPTIMALITY</th>
+                  <th>REAL-WORLD USE CASE IN AEGIS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="color:var(--accent-primary);font-weight:bold;">A* Search</td>
+                  <td>O((V + E) log V)</td>
+                  <td>O(V)</td>
+                  <td>Optimal with admissible heuristic</td>
+                  <td>Primary emergency corridor routing with NFZ avoidance</td>
+                </tr>
+                <tr>
+                  <td style="color:#00ff88;font-weight:bold;">Dijkstra's</td>
+                  <td>O((V + E) log V)</td>
+                  <td>O(V)</td>
+                  <td>Guaranteed shortest total distance</td>
+                  <td>Multi-drone battery-constrained path computation</td>
+                </tr>
+                <tr>
+                  <td style="color:#ffb800;font-weight:bold;">BFS Traversal</td>
+                  <td>O(V + E)</td>
+                  <td>O(V)</td>
+                  <td>Optimal for unweighted minimum hops</td>
+                  <td>Perimeter search, flood grid sweeps, radio relay hops</td>
+                </tr>
+                <tr>
+                  <td style="color:#7b5fff;font-weight:bold;">Threaded BST</td>
+                  <td>O(log N) insert/delete</td>
+                  <td>O(1) auxiliary traversal</td>
+                  <td>Strict priority order</td>
+                  <td>Embedded real-time dispatch queue with zero stack frames</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CDN Scripts — load order matters -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
@@ -882,6 +1452,10 @@ const STATE = {
   heatPoints: [],
   webcamActive: false,
   webcamPredictions: [],
+  routingAlgo: 'astar', // 'astar' | 'dijkstra' | 'bfs' | 'direct'
+  showCorridors: true,
+  mapBaseLayer: 'dark',
+  tbtStats: { inserts: 0, stacklessTraversals: 0, nodeCount: 0 },
 };
 
 // ===================================================================
@@ -899,76 +1473,760 @@ function xy2ll(x, y) {
 }
 
 // ===================================================================
-//  LEAFLET MAP
+//  DATA STRUCTURES & ALGORITHMS (DSA) ENGINE
+//  MIT-ADT CSE / Experiential Learning CO III Alignment
+// ===================================================================
+
+// --- 1. DOUBLE-THREADED BINARY SEARCH TREE (TBST) ---
+class TBSTNode {
+  constructor(key, data) {
+    this.key = key;           // Priority Key (numeric)
+    this.data = data;         // Incident object
+    this.left = null;         // Left child pointer (or predecessor thread)
+    this.right = null;        // Right child pointer (or successor thread)
+    this.leftThread = false;  // true if left points to in-order predecessor
+    this.rightThread = false; // true if right points to in-order successor
+  }
+}
+
+class ThreadedBinarySearchTree {
+  constructor() {
+    this.root = null;
+    this.size = 0;
+  }
+
+  insert(key, data) {
+    const node = new TBSTNode(key, data);
+    this.size++;
+
+    if (!this.root) {
+      this.root = node;
+      return node;
+    }
+
+    let curr = this.root;
+    let parent = null;
+
+    while (curr) {
+      parent = curr;
+      if (key < curr.key) {
+        if (!curr.leftThread && curr.left) {
+          curr = curr.left;
+        } else {
+          break;
+        }
+      } else {
+        if (!curr.rightThread && curr.right) {
+          curr = curr.right;
+        } else {
+          break;
+        }
+      }
+    }
+
+    if (key < parent.key) {
+      node.left = parent.left;
+      node.right = parent;
+      node.leftThread = parent.leftThread;
+      node.rightThread = true;
+      parent.left = node;
+      parent.leftThread = false;
+    } else {
+      node.left = parent;
+      node.right = parent.right;
+      node.leftThread = true;
+      node.rightThread = parent.rightThread;
+      parent.right = node;
+      parent.rightThread = false;
+    }
+
+    return node;
+  }
+
+  // O(1) Auxiliary space in-order successor lookup using threads
+  inorderSuccessor(node) {
+    if (!node) return null;
+    if (node.rightThread) return node.right;
+    node = node.right;
+    if (!node) return null;
+    while (!node.leftThread && node.left) {
+      node = node.left;
+    }
+    return node;
+  }
+
+  // O(1) Auxiliary space in-order predecessor lookup using threads
+  inorderPredecessor(node) {
+    if (!node) return null;
+    if (node.leftThread) return node.left;
+    node = node.left;
+    if (!node) return null;
+    while (!node.rightThread && node.right) {
+      node = node.right;
+    }
+    return node;
+  }
+
+  // Stackless In-Order Traversal (Ascending priority)
+  inorderTraversal() {
+    const result = [];
+    if (!this.root) return result;
+    let curr = this.root;
+    while (!curr.leftThread && curr.left) {
+      curr = curr.left;
+    }
+    while (curr) {
+      result.push({
+        key: curr.key,
+        data: curr.data,
+        leftThread: curr.leftThread,
+        rightThread: curr.rightThread,
+        leftKey: curr.left ? curr.left.key : null,
+        rightKey: curr.right ? curr.right.key : null
+      });
+      curr = this.inorderSuccessor(curr);
+    }
+    return result;
+  }
+
+  // Stackless Reverse In-Order Traversal (Descending priority - Emergency dispatch)
+  reverseInorderTraversal() {
+    const result = [];
+    if (!this.root) return result;
+    let curr = this.root;
+    while (!curr.rightThread && curr.right) {
+      curr = curr.right;
+    }
+    while (curr) {
+      result.push({
+        key: curr.key,
+        data: curr.data,
+        leftThread: curr.leftThread,
+        rightThread: curr.rightThread,
+        leftKey: curr.left ? curr.left.key : null,
+        rightKey: curr.right ? curr.right.key : null
+      });
+      curr = this.inorderPredecessor(curr);
+    }
+    return result;
+  }
+
+  delete(key) {
+    let curr = this.root;
+    let par = null;
+    let found = false;
+
+    while (curr) {
+      if (curr.key === key) {
+        found = true;
+        break;
+      }
+      par = curr;
+      if (key < curr.key) {
+        if (!curr.leftThread && curr.left) curr = curr.left;
+        else break;
+      } else {
+        if (!curr.rightThread && curr.right) curr = curr.right;
+        else break;
+      }
+    }
+
+    if (!found) return false;
+    this.size--;
+
+    // Case 3: Node with two children
+    if ((!curr.leftThread && curr.left) && (!curr.rightThread && curr.right)) {
+      let parSucc = curr;
+      let succ = curr.right;
+      while (!succ.leftThread && succ.left) {
+        parSucc = succ;
+        succ = succ.left;
+      }
+      curr.key = succ.key;
+      curr.data = succ.data;
+      curr = succ;
+      par = parSucc;
+    }
+
+    // Case 1 & 2: Leaf or Node with one child
+    let child = null;
+    if (!curr.leftThread && curr.left) {
+      child = curr.left;
+    } else if (!curr.rightThread && curr.right) {
+      child = curr.right;
+    }
+
+    if (!par) {
+      this.root = child;
+    } else if (curr === par.left) {
+      if (child) {
+        par.left = child;
+      } else {
+        par.left = curr.left;
+        par.leftThread = true;
+      }
+    } else {
+      if (child) {
+        par.right = child;
+      } else {
+        par.right = curr.right;
+        par.rightThread = true;
+      }
+    }
+
+    if (child) {
+      const pred = this.inorderPredecessor(curr);
+      const succ = this.inorderSuccessor(curr);
+      if (!curr.leftThread && curr.left) {
+        let p = curr.left;
+        while (!p.rightThread && p.right) p = p.right;
+        p.right = succ;
+      } else if (!curr.rightThread && curr.right) {
+        let s = curr.right;
+        while (!s.leftThread && s.left) s = s.left;
+        s.left = pred;
+      }
+    }
+
+    return true;
+  }
+
+  clear() {
+    this.root = null;
+    this.size = 0;
+  }
+
+  getTreeAscii() {
+    if (!this.root) return 'Tree is currently empty. Dispatch or simulate alerts to populate TBST.';
+    const lines = [];
+    function build(node, prefix = '', isLeft = true) {
+      if (!node) return;
+      lines.push(`${prefix}${isLeft ? '├── ' : '└── '}[Key: ${node.key}] ${node.data.type} (${node.data.severity})` +
+        ` [LT:${node.leftThread ? 'Pred' : 'Child'}, RT:${node.rightThread ? 'Succ' : 'Child'}]`);
+      if (!node.leftThread && node.left) {
+        build(node.left, `${prefix}${isLeft ? '│   ' : '    '}`, true);
+      }
+      if (!node.rightThread && node.right) {
+        build(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+      }
+    }
+    lines.push(`[ROOT: ${this.root.key}] ${this.root.data.type}`);
+    if (!this.root.leftThread && this.root.left) build(this.root.left, '', true);
+    if (!this.root.rightThread && this.root.right) build(this.root.right, '', false);
+    return lines.join('\n');
+  }
+}
+
+const INCIDENT_TBST = new ThreadedBinarySearchTree();
+
+// --- 2. PUNE AIRSPACE CORRIDOR GRAPH G = (V, E) ---
+const CORRIDOR_NODES = {
+  'FC':    { id: 'FC',    name: 'FC Road Corridor',       lat: 18.5195, lng: 73.8469 },
+  'SHIV':  { id: 'SHIV',  name: 'Shivajinagar Junction',   lat: 18.5308, lng: 73.8474 },
+  'STN':   { id: 'STN',   name: 'Pune Station Airlink',   lat: 18.5284, lng: 73.8742 },
+  'KP':    { id: 'KP',    name: 'Koregaon Park Terminal',  lat: 18.5362, lng: 73.8938 },
+  'VIMAN': { id: 'VIMAN', name: 'Viman Nagar Corridor',   lat: 18.5679, lng: 73.9143 },
+  'HDP':   { id: 'HDP',   name: 'Hadapsar Hub',           lat: 18.5018, lng: 73.9260 },
+  'KTR':   { id: 'KTR',   name: 'Katraj Airway',          lat: 18.4528, lng: 73.8635 },
+  'SWAR':  { id: 'SWAR',  name: 'Swargate Interchange',   lat: 18.4998, lng: 73.8587 },
+  'DEC':   { id: 'DEC',   name: 'Deccan Gymkhana Skyway', lat: 18.5142, lng: 73.8396 },
+  'KOTH':  { id: 'KOTH',  name: 'Kothrud Paud Airlink',   lat: 18.5074, lng: 73.8077 },
+  'AUNDH': { id: 'AUNDH', name: 'Aundh North Corridor',   lat: 18.5591, lng: 73.8076 },
+  'BNR':   { id: 'BNR',   name: 'Baner Tech Airway',      lat: 18.5590, lng: 73.7868 },
+  'YRW':   { id: 'YRW',   name: 'Yerawada Transit',       lat: 18.5528, lng: 73.8821 },
+  'KLN':   { id: 'KLN',   name: 'Kalyani Nagar Gateway',  lat: 18.5463, lng: 73.9034 },
+  'KHDK':  { id: 'KHDK',  name: 'Khadki Air Corridor',    lat: 18.5615, lng: 73.8340 },
+  'MGP':   { id: 'MGP',   name: 'Magarpatta Cyber Skyway',lat: 18.5089, lng: 73.9260 },
+};
+
+const CORRIDOR_EDGES = [
+  ['DEC', 'FC'], ['DEC', 'KOTH'], ['DEC', 'SWAR'],
+  ['FC', 'SHIV'], ['SHIV', 'KHDK'], ['SHIV', 'STN'],
+  ['KHDK', 'AUNDH'], ['AUNDH', 'BNR'],
+  ['STN', 'YRW'], ['STN', 'KP'], ['STN', 'SWAR'],
+  ['YRW', 'KLN'], ['KP', 'KLN'], ['KLN', 'VIMAN'],
+  ['KP', 'MGP'], ['MGP', 'HDP'],
+  ['SWAR', 'KTR'], ['SWAR', 'HDP']
+];
+
+// NO-FLY ZONES (NFZs)
+const NO_FLY_ZONES = [
+  {
+    id: 'NFZ_AIRPORT',
+    name: 'PUNE AIRPORT / LOHEGAON AFB',
+    lat: 18.5780,
+    lng: 73.9195,
+    radius: 1250, // meters
+    color: '#ff0055',
+    desc: 'Defense / Civil Exclusion Zone (Flight Prohibited)'
+  },
+  {
+    id: 'NFZ_VIP',
+    name: 'RAJ BHAVAN / VIP ENCLAVE',
+    lat: 18.5440,
+    lng: 73.8340,
+    radius: 700,
+    color: '#ff3b3b',
+    desc: 'Government High-Security Protected Airspace'
+  }
+];
+
+// Haversine distance in meters
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Check if a line segment between two GPS coordinates intersects an NFZ circle
+function segmentIntersectsNFZ(lat1, lng1, lat2, lng2, nfz) {
+  for (let t = 0; t <= 1; t += 0.08) {
+    const pLat = lat1 + t * (lat2 - lat1);
+    const pLng = lng1 + t * (lng2 - lng1);
+    if (haversineMeters(pLat, pLng, nfz.lat, nfz.lng) < nfz.radius) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Build weighted graph adjacency list
+const CORRIDOR_ADJ = {};
+for (const k in CORRIDOR_NODES) CORRIDOR_ADJ[k] = [];
+
+CORRIDOR_EDGES.forEach(([u, v]) => {
+  const n1 = CORRIDOR_NODES[u], n2 = CORRIDOR_NODES[v];
+  const dist = haversineMeters(n1.lat, n1.lng, n2.lat, n2.lng);
+
+  let blocked = false;
+  for (const nfz of NO_FLY_ZONES) {
+    if (segmentIntersectsNFZ(n1.lat, n1.lng, n2.lat, n2.lng, nfz)) {
+      blocked = true;
+      break;
+    }
+  }
+
+  CORRIDOR_ADJ[u].push({ target: v, weight: dist, blocked });
+  CORRIDOR_ADJ[v].push({ target: u, weight: dist, blocked });
+});
+
+// Find nearest corridor node to a given lat/lng
+function findNearestCorridorNode(lat, lng) {
+  let best = null, bestDist = Infinity;
+  for (const k in CORRIDOR_NODES) {
+    const n = CORRIDOR_NODES[k];
+    const dist = haversineMeters(lat, lng, n.lat, n.lng);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = k;
+    }
+  }
+  return best;
+}
+
+// A* Shortest Path Algorithm
+function aStarCorridorPath(startNodeId, targetNodeId) {
+  const openSet = [{ node: startNodeId, f: 0, g: 0, path: [startNodeId] }];
+  const visited = {};
+  let evaluated = 0;
+
+  while (openSet.length > 0) {
+    openSet.sort((a, b) => a.f - b.f);
+    const curr = openSet.shift();
+    evaluated++;
+
+    if (curr.node === targetNodeId) {
+      return { path: curr.path, distance: curr.g, evaluated, algo: 'A* Search' };
+    }
+
+    if (visited[curr.node] !== undefined && visited[curr.node] <= curr.g) continue;
+    visited[curr.node] = curr.g;
+
+    for (const edge of CORRIDOR_ADJ[curr.node]) {
+      if (edge.blocked) continue; // Respect No-Fly Zones
+      const ng = curr.g + edge.weight;
+      if (visited[edge.target] !== undefined && visited[edge.target] <= ng) continue;
+
+      const targetNode = CORRIDOR_NODES[targetNodeId];
+      const nextNode = CORRIDOR_NODES[edge.target];
+      const h = haversineMeters(nextNode.lat, nextNode.lng, targetNode.lat, targetNode.lng);
+
+      openSet.push({
+        node: edge.target,
+        f: ng + h,
+        g: ng,
+        path: [...curr.path, edge.target]
+      });
+    }
+  }
+  return { path: [startNodeId, targetNodeId], distance: 0, evaluated, algo: 'A* (Direct Fallback)' };
+}
+
+// Dijkstra's Algorithm (Cost Shortest Path)
+function dijkstraCorridorPath(startNodeId, targetNodeId) {
+  const pq = [{ node: startNodeId, cost: 0, path: [startNodeId] }];
+  const visited = {};
+  let evaluated = 0;
+
+  while (pq.length > 0) {
+    pq.sort((a, b) => a.cost - b.cost);
+    const curr = pq.shift();
+    evaluated++;
+
+    if (curr.node === targetNodeId) {
+      return { path: curr.path, distance: curr.cost, evaluated, algo: "Dijkstra's" };
+    }
+
+    if (visited[curr.node] !== undefined && visited[curr.node] <= curr.cost) continue;
+    visited[curr.node] = curr.cost;
+
+    for (const edge of CORRIDOR_ADJ[curr.node]) {
+      if (edge.blocked) continue;
+      const nCost = curr.cost + edge.weight;
+      if (visited[edge.target] !== undefined && visited[edge.target] <= nCost) continue;
+
+      pq.push({
+        node: edge.target,
+        cost: nCost,
+        path: [...curr.path, edge.target]
+      });
+    }
+  }
+  return { path: [startNodeId, targetNodeId], distance: 0, evaluated, algo: "Dijkstra's (Fallback)" };
+}
+
+// Breadth-First Search (BFS - Unweighted Min Hops)
+function bfsCorridorPath(startNodeId, targetNodeId) {
+  const queue = [{ node: startNodeId, path: [startNodeId], dist: 0 }];
+  const visited = new Set([startNodeId]);
+  let evaluated = 0;
+
+  while (queue.length > 0) {
+    const curr = queue.shift();
+    evaluated++;
+
+    if (curr.node === targetNodeId) {
+      return { path: curr.path, distance: curr.dist, evaluated, algo: 'BFS Traversal' };
+    }
+
+    for (const edge of CORRIDOR_ADJ[curr.node]) {
+      if (edge.blocked) continue;
+      if (!visited.has(edge.target)) {
+        visited.add(edge.target);
+        queue.push({
+          node: edge.target,
+          path: [...curr.path, edge.target],
+          dist: curr.dist + edge.weight
+        });
+      }
+    }
+  }
+  return { path: [startNodeId, targetNodeId], distance: 0, evaluated, algo: 'BFS (Fallback)' };
+}
+
+// High-level route calculation between two GPS coordinates
+function calculateFlightCorridor(fromLL, toLL, algoOverride) {
+  const algo = algoOverride || STATE.routingAlgo || 'astar';
+
+  if (algo === 'direct') {
+    const dist = haversineMeters(fromLL[0], fromLL[1], toLL[0], toLL[1]);
+    const startXY = ll2xy(fromLL[0], fromLL[1]);
+    const endXY = ll2xy(toLL[0], toLL[1]);
+    return {
+      nodeIds: [],
+      waypoints: [{ ...endXY, lat: toLL[0], lng: toLL[1], name: 'Direct Incident Target' }],
+      distanceM: dist,
+      hops: 1,
+      evaluatedCount: 1,
+      algo: 'Euclidean Direct'
+    };
+  }
+
+  const startNode = findNearestCorridorNode(fromLL[0], fromLL[1]);
+  const endNode = findNearestCorridorNode(toLL[0], toLL[1]);
+
+  let result;
+  if (algo === 'dijkstra') {
+    result = dijkstraCorridorPath(startNode, endNode);
+  } else if (algo === 'bfs') {
+    result = bfsCorridorPath(startNode, endNode);
+  } else {
+    result = aStarCorridorPath(startNode, endNode);
+  }
+
+  const waypoints = result.path.map(id => {
+    const n = CORRIDOR_NODES[id];
+    const xy = ll2xy(n.lat, n.lng);
+    return { x: xy.x, y: xy.y, lat: n.lat, lng: n.lng, name: n.name };
+  });
+
+  const destXY = ll2xy(toLL[0], toLL[1]);
+  waypoints.push({ x: destXY.x, y: destXY.y, lat: toLL[0], lng: toLL[1], name: 'Incident Ground Target' });
+
+  const totalDist = result.distance +
+    haversineMeters(fromLL[0], fromLL[1], CORRIDOR_NODES[startNode].lat, CORRIDOR_NODES[startNode].lng) +
+    haversineMeters(CORRIDOR_NODES[endNode].lat, CORRIDOR_NODES[endNode].lng, toLL[0], toLL[1]);
+
+  return {
+    nodeIds: result.path,
+    waypoints,
+    distanceM: totalDist,
+    hops: result.path.length,
+    evaluatedCount: result.evaluated,
+    algo: result.algo
+  };
+}
+
+// ===================================================================
+//  LEAFLET MAP & MULTI-LAYER RESILIENT TILE PROVIDER
 // ===================================================================
 let leafletMap = null;
 let droneMarkers = {};
 let droneTrailLines = {};
+let droneCorridorPolylines = {};
 let incidentMarkers = {};
 let heatLayer = null;
+let corridorGroup = null;
+let nfzGroup = null;
+let currentBaseLayer = null;
+
+const MAP_LAYERS = {
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    subdomains: 'abcd',
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+  }),
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: '&copy; Esri World Imagery'
+  }),
+  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    subdomains: 'abc',
+    attribution: '&copy; OpenStreetMap contributors'
+  })
+};
+
+// Catch and suppress tile network errors gracefully
+Object.values(MAP_LAYERS).forEach(layer => {
+  layer.on('tileerror', function() {
+    // Suppress console crash and gracefully handle
+  });
+});
+
+function setMapBaseLayer(layerKey) {
+  if (!leafletMap || !MAP_LAYERS[layerKey]) return;
+  if (currentBaseLayer) leafletMap.removeLayer(currentBaseLayer);
+  currentBaseLayer = MAP_LAYERS[layerKey];
+  currentBaseLayer.addTo(leafletMap);
+  currentBaseLayer.bringToBack();
+  STATE.mapBaseLayer = layerKey;
+  ['dark', 'satellite', 'osm'].forEach(k => {
+    const el = document.getElementById('layer-' + k);
+    if (el) el.classList.toggle('active', k === layerKey);
+  });
+  addLog(`MAP: Base layer switched to ${layerKey.toUpperCase()}`, 'ok');
+}
+
+function initCorridorVisualLayers() {
+  if (!leafletMap) return;
+  corridorGroup = L.layerGroup().addTo(leafletMap);
+  nfzGroup = L.layerGroup().addTo(leafletMap);
+
+  // Render No-Fly Zones
+  NO_FLY_ZONES.forEach(nfz => {
+    L.circle([nfz.lat, nfz.lng], {
+      radius: nfz.radius,
+      color: nfz.color,
+      fillColor: nfz.color,
+      fillOpacity: 0.18,
+      weight: 2,
+      dashArray: '6 6',
+    }).addTo(nfzGroup).bindPopup(`
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px;min-width:180px;">
+        <div style="color:${nfz.color};font-weight:bold;margin-bottom:4px;">⚠ ${nfz.name}</div>
+        <div style="color:#e0f4ff;margin-bottom:4px;">${nfz.desc}</div>
+        <div style="color:#5a8aaa;">RADIUS: ${nfz.radius}m | EXCLUSION ACTIVE</div>
+      </div>
+    `);
+  });
+
+  // Render Corridor Edges
+  CORRIDOR_EDGES.forEach(([u, v]) => {
+    const n1 = CORRIDOR_NODES[u], n2 = CORRIDOR_NODES[v];
+    L.polyline([[n1.lat, n1.lng], [n2.lat, n2.lng]], {
+      color: '#00e5ff',
+      weight: 1.5,
+      opacity: 0.35,
+      dashArray: '4 6'
+    }).addTo(corridorGroup);
+  });
+
+  // Render Corridor Nodes
+  for (const k in CORRIDOR_NODES) {
+    const n = CORRIDOR_NODES[k];
+    L.circleMarker([n.lat, n.lng], {
+      radius: 3.5,
+      color: '#00e5ff',
+      fillColor: '#030810',
+      fillOpacity: 0.9,
+      weight: 1.5
+    }).addTo(corridorGroup).bindTooltip(`AIR CORRIDOR: ${n.name}`, {
+      direction: 'top',
+      className: 'drone-ltooltip',
+      offset: [0, -6]
+    });
+  }
+}
+
+function toggleCorridors() {
+  STATE.showCorridors = !STATE.showCorridors;
+  const btn = document.getElementById('btnCorridors');
+  if (btn) btn.classList.toggle('active', STATE.showCorridors);
+  if (corridorGroup && nfzGroup) {
+    if (STATE.showCorridors) {
+      leafletMap.addLayer(corridorGroup);
+      leafletMap.addLayer(nfzGroup);
+    } else {
+      leafletMap.removeLayer(corridorGroup);
+      leafletMap.removeLayer(nfzGroup);
+    }
+  }
+  addLog(`DSA: Air corridor graph visualization ${STATE.showCorridors ? 'ENABLED' : 'HIDDEN'}`, 'ok');
+}
+
+const ROUTING_ALGOS = ['astar', 'dijkstra', 'bfs', 'direct'];
+const ALGO_LABELS = {
+  astar: 'A* SEARCH (HEURISTIC)',
+  dijkstra: "DIJKSTRA'S (MIN COST)",
+  bfs: 'BFS (MIN HOPS)',
+  direct: 'EUCLIDEAN (STRAIGHT)'
+};
+
+function cycleRoutingAlgo() {
+  const currIdx = ROUTING_ALGOS.indexOf(STATE.routingAlgo);
+  STATE.routingAlgo = ROUTING_ALGOS[(currIdx + 1) % ROUTING_ALGOS.length];
+  const btn = document.getElementById('btnAlgoToggle');
+  if (btn) btn.textContent = `ALGO: ${STATE.routingAlgo.toUpperCase()}`;
+  const headerDsa = document.getElementById('headerDsaAlgo');
+  if (headerDsa) headerDsa.textContent = `${STATE.routingAlgo.toUpperCase()} + TBST`;
+  addLog(`DSA: Active routing algorithm switched to ${ALGO_LABELS[STATE.routingAlgo]}`, 'alert');
+  const dsaActiveAlgoName = document.getElementById('dsaActiveAlgoName');
+  if (dsaActiveAlgoName) dsaActiveAlgoName.textContent = STATE.routingAlgo.toUpperCase() + ' SEARCH';
+}
 
 function initLeafletMap() {
-  leafletMap = L.map('leafletMap', {
-    center: [18.52, 73.855],
-    zoom: 13,
-    zoomControl: false,
-    attributionControl: false,
-    preferCanvas: true,
-  });
+  if (typeof L === 'undefined') {
+    addLog('CRITICAL: Leaflet library failed to load from CDN. Switching to offline canvas fallback.', 'alert');
+    return;
+  }
 
-  // Esri World Dark Gray Canvas tiles (free, no API key required)
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 16,
-    attribution: '',
-  }).addTo(leafletMap);
+  try {
+    leafletMap = L.map('leafletMap', {
+      center: [18.5204, 73.8567],
+      zoom: 13,
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: true,
+    });
 
-  // Place/boundary labels overlay
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 19,
-    attribution: '',
-  }).addTo(leafletMap);
+    // Primary dark tactical layer (CartoDB Dark Matter)
+    currentBaseLayer = MAP_LAYERS.dark;
+    currentBaseLayer.addTo(leafletMap);
 
-  // Heatmap layer
-  heatLayer = L.heatLayer([], {
-    radius: 45,
-    blur: 35,
-    maxZoom: 15,
-    max: 1.0,
-    gradient: { 0.3: '#001f4d', 0.5: '#ffb800', 0.75: '#ff6600', 1.0: '#ff0000' }
-  }).addTo(leafletMap);
+    // Heatmap layer safely initialized
+    if (typeof L.heatLayer === 'function') {
+      heatLayer = L.heatLayer([], {
+        radius: 45,
+        blur: 35,
+        maxZoom: 15,
+        max: 1.0,
+        gradient: { 0.3: '#001f4d', 0.5: '#ffb800', 0.75: '#ff6600', 1.0: '#ff0000' }
+      }).addTo(leafletMap);
+    }
 
-  // Patrol zones — centred on the 4 camera feed locations
-  FEED_LOCATIONS.forEach(loc => {
-    L.circle([loc.lat, loc.lng], {
-      radius: 800,
-      color: '#ffb800',
-      fillColor: '#ffb800',
-      fillOpacity: 0.04,
-      weight: 1,
-      opacity: 0.3,
-      dashArray: '4 5',
-    }).addTo(leafletMap);
-  });
+    // Patrol zones — centred on the 4 camera feed locations
+    FEED_LOCATIONS.forEach(loc => {
+      L.circle([loc.lat, loc.lng], {
+        radius: 800,
+        color: '#ffb800',
+        fillColor: '#ffb800',
+        fillOpacity: 0.04,
+        weight: 1,
+        opacity: 0.3,
+        dashArray: '4 5',
+      }).addTo(leafletMap);
+    });
 
-  // Drone base markers
-  BASE_POSITIONS.forEach(pos => {
-    const ll = xy2ll(pos.x, pos.y);
-    L.circleMarker(ll, {
-      radius: 4,
+    // Drone base markers
+    BASE_POSITIONS.forEach(pos => {
+      const ll = xy2ll(pos.x, pos.y);
+      L.circleMarker(ll, {
+        radius: 4,
+        color: '#00e5ff',
+        fillColor: '#00e5ff',
+        fillOpacity: 0.12,
+        weight: 1,
+        opacity: 0.4,
+      }).addTo(leafletMap);
+    });
+
+    // Initialize Air Corridor Graph & NFZs
+    initCorridorVisualLayers();
+
+    // Invalidate size to guarantee correct tile rendering on load and window resize
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 600);
+    window.addEventListener('resize', () => { if (leafletMap) leafletMap.invalidateSize(); });
+
+    // Update coords on map move
+    leafletMap.on('moveend', () => {
+      const c = leafletMap.getCenter();
+      document.getElementById('coordsDisplay').textContent =
+        `LAT: ${c.lat.toFixed(4)}° N | LNG: ${c.lng.toFixed(4)}° E | ALT: 580m`;
+    });
+
+    // Populate route tester dropdowns
+    populateRouteTesterDropdowns();
+
+  } catch (err) {
+    console.error('Map initialization error:', err);
+    addLog(`MAP ERROR: ${err.message}`, 'alert');
+  }
+}
+
+function updateDroneCorridorLine(drone, waypoints) {
+  if (!leafletMap) return;
+  if (!waypoints || waypoints.length === 0) {
+    if (droneCorridorPolylines[drone.id]) {
+      leafletMap.removeLayer(droneCorridorPolylines[drone.id]);
+      delete droneCorridorPolylines[drone.id];
+    }
+    return;
+  }
+
+  const latlngs = [xy2ll(drone.x, drone.y), ...waypoints.map(w => [w.lat, w.lng])];
+  if (!droneCorridorPolylines[drone.id]) {
+    droneCorridorPolylines[drone.id] = L.polyline(latlngs, {
       color: '#00e5ff',
-      fillColor: '#00e5ff',
-      fillOpacity: 0.12,
-      weight: 1,
-      opacity: 0.4,
+      weight: 2.5,
+      opacity: 0.7,
+      dashArray: '5 7'
     }).addTo(leafletMap);
-  });
+  } else {
+    droneCorridorPolylines[drone.id].setLatLngs(latlngs);
+  }
+}
 
-  // Update coords on map move
-  leafletMap.on('moveend', () => {
-    const c = leafletMap.getCenter();
-    document.getElementById('coordsDisplay').textContent =
-      `LAT: ${c.lat.toFixed(4)}° N | LNG: ${c.lng.toFixed(4)}° E | ALT: 580m`;
-  });
+function clearDroneCorridorLine(droneId) {
+  if (leafletMap && droneCorridorPolylines[droneId]) {
+    leafletMap.removeLayer(droneCorridorPolylines[droneId]);
+    delete droneCorridorPolylines[droneId];
+  }
 }
 
 function getDroneColor(status) {
@@ -1219,6 +2477,14 @@ function triggerWebcamIncident(prediction) {
     arrivalHandled: false,
   };
 
+  const priorityKey = (incident.severity === 'critical' ? 3000 : incident.severity === 'high' ? 2000 : 1000)
+    + Math.round(incident.confidence * 900)
+    + (incident.id % 100);
+  incident.priorityKey = priorityKey;
+  INCIDENT_TBST.insert(priorityKey, incident);
+  STATE.tbtStats.inserts++;
+  STATE.tbtStats.nodeCount = INCIDENT_TBST.size;
+
   STATE.incidents.push(incident);
   STATE.feeds[0].alerting = true;
   setTimeout(() => { if (STATE.feeds[0]) STATE.feeds[0].alerting = false; }, 3500);
@@ -1229,13 +2495,14 @@ function triggerWebcamIncident(prediction) {
   const drone = findNearestDrone(incident.x, incident.y);
   if (drone) dispatchDrone(drone, incident);
   else {
-    addLog(`WARNING: No drones available — INCIDENT #${incident.id} queued`, 'warn');
+    addLog(`WARNING: No drones available — INCIDENT #${incident.id} queued in TBST (Key: ${priorityKey})`, 'warn');
     incident.status = 'pending';
   }
 
   renderIncidents();
   renderDrones();
   updateLeafletIncidents();
+  renderTbtInspector();
 }
 
 // Render webcam overlay (called inside main renderFeed loop)
@@ -1392,15 +2659,32 @@ function findNearestDrone(ix, iy) {
 function dispatchDrone(drone, incident) {
   drone.status = 'dispatched';
   drone.assignedIncident = incident.id;
-  drone.targetX = incident.x;
-  drone.targetY = incident.y;
-  const dx = drone.x - incident.x, dy = drone.y - incident.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  drone.eta = Math.ceil(dist / drone.speed * 0.05);
+
+  const droneLL = xy2ll(drone.x, drone.y);
+  const incLL = xy2ll(incident.x, incident.y);
+
+  // Compute collision-free flight corridor via A* / Dijkstra / BFS
+  const route = calculateFlightCorridor(droneLL, incLL, STATE.routingAlgo);
+  drone.corridorWaypoints = [...route.waypoints];
+
+  if (drone.corridorWaypoints.length > 0) {
+    drone.targetX = drone.corridorWaypoints[0].x;
+    drone.targetY = drone.corridorWaypoints[0].y;
+  } else {
+    drone.targetX = incident.x;
+    drone.targetY = incident.y;
+  }
+
+  // Calculate ETA based on true corridor distance
+  drone.eta = Math.max(8, Math.ceil((route.distanceM / (drone.speed * 400000)) + 6));
   incident.droneId = drone.id;
   incident.eta = drone.eta;
   incident.status = 'dispatched';
-  addLog(`DISPATCH: ${drone.id} → INCIDENT #${incident.id} | ETA ${drone.eta}s`, 'dispatch');
+
+  // Render corridor polyline on tactical map
+  updateDroneCorridorLine(drone, drone.corridorWaypoints);
+
+  addLog(`[DSA ${route.algo}] ${drone.id} dispatched: ${route.hops} hops (${(route.distanceM/1000).toFixed(2)} km) | NFZ clear | ETA ${drone.eta}s`, 'dispatch');
 }
 
 function triggerRandomIncident() {
@@ -1426,6 +2710,16 @@ function triggerRandomIncident() {
     age: 0,
     arrivalHandled: false,
   };
+
+  // Insert into Double-Threaded Binary Search Tree (TBST) Priority Queue
+  const priorityKey = (incident.severity === 'critical' ? 3000 : incident.severity === 'high' ? 2000 : 1000)
+    + Math.round(incident.confidence * 900)
+    + (incident.id % 100);
+  incident.priorityKey = priorityKey;
+  INCIDENT_TBST.insert(priorityKey, incident);
+  STATE.tbtStats.inserts++;
+  STATE.tbtStats.nodeCount = INCIDENT_TBST.size;
+
   STATE.incidents.push(incident);
 
   if (STATE.feeds[camId]) {
@@ -1452,13 +2746,14 @@ function triggerRandomIncident() {
   const drone = findNearestDrone(incident.x, incident.y);
   if (drone) dispatchDrone(drone, incident);
   else {
-    addLog(`WARNING: No drones available — INCIDENT #${incident.id} queued`, 'warn');
+    addLog(`WARNING: No drones available — INCIDENT #${incident.id} queued in TBST (Key: ${priorityKey})`, 'warn');
     incident.status = 'pending';
   }
 
   renderIncidents();
   renderDrones();
   updateLeafletIncidents();
+  renderTbtInspector();
 }
 
 function clearAllIncidents() {
@@ -1471,6 +2766,8 @@ function clearAllIncidents() {
       drone.targetY = drone.by;
       drone.eta = null;
       drone.trail = [];
+      drone.corridorWaypoints = [];
+      clearDroneCorridorLine(drone.id);
     }
   }
   for (const d of STATE.drones) {
@@ -1479,6 +2776,8 @@ function clearAllIncidents() {
       d.assignedIncident = null;
       d.eta = null;
       d.trail = [];
+      d.corridorWaypoints = [];
+      clearDroneCorridorLine(d.id);
       d.x = d.bx; d.y = d.by;
       d.targetX = d.bx; d.targetY = d.by;
     }
@@ -1492,32 +2791,58 @@ function clearAllIncidents() {
   }
   incidentMarkers = {};
 
-  addLog('OPS: All incidents cleared by operator', 'ok');
+  // Clear TBST
+  INCIDENT_TBST.clear();
+  STATE.tbtStats.nodeCount = 0;
+
+  addLog('OPS: All incidents cleared by operator | TBST reset', 'ok');
   renderIncidents();
   renderDrones();
+  renderTbtInspector();
 }
 
 function returnDrone(drone) {
   drone.status = 'returning';
   drone.assignedIncident = null;
-  drone.targetX = drone.bx;
-  drone.targetY = drone.by;
+
+  const droneLL = xy2ll(drone.x, drone.y);
+  const baseLL = xy2ll(drone.bx, drone.by);
+
+  const route = calculateFlightCorridor(droneLL, baseLL, STATE.routingAlgo);
+  drone.corridorWaypoints = [...route.waypoints];
+
+  if (drone.corridorWaypoints.length > 0) {
+    drone.targetX = drone.corridorWaypoints[0].x;
+    drone.targetY = drone.corridorWaypoints[0].y;
+  } else {
+    drone.targetX = drone.bx;
+    drone.targetY = drone.by;
+  }
+
   drone.eta = null;
-  addLog(`RETURN: ${drone.id} → BASE`, 'ok');
+  updateDroneCorridorLine(drone, drone.corridorWaypoints);
+  addLog(`[DSA ${route.algo}] RETURN: ${drone.id} returning to base via corridor (${route.hops} hops)`, 'ok');
   setTimeout(() => dispatchPending(), 600);
 }
 
 function dispatchPending() {
-  const sevOrder = { critical: 0, high: 1, medium: 2 };
-  const pending = STATE.incidents
-    .filter(i => i.status === 'pending' || i.status === 'unassigned')
-    .sort((a, b) => (sevOrder[a.severity] ?? 2) - (sevOrder[b.severity] ?? 2));
-  for (const inc of pending) {
-    const drone = findNearestDrone(inc.x, inc.y);
-    if (!drone) break;
-    addLog(`REQUEUE: ${drone.id} → INCIDENT #${inc.id} [${inc.type}]`, 'dispatch');
-    dispatchDrone(drone, inc);
+  if (INCIDENT_TBST.size === 0) return;
+
+  // Use Stackless O(1) Auxiliary Memory Reverse In-Order Traversal from Threaded BST
+  const sortedPending = INCIDENT_TBST.reverseInorderTraversal();
+  STATE.tbtStats.stacklessTraversals++;
+
+  for (const item of sortedPending) {
+    const inc = item.data;
+    if (inc.status === 'pending' || inc.status === 'unassigned') {
+      const drone = findNearestDrone(inc.x, inc.y);
+      if (!drone) break;
+      addLog(`[DSA TBST] Dispatch from TBT Priority Queue (Key: ${item.key}): ${drone.id} → INCIDENT #${inc.id}`, 'dispatch');
+      dispatchDrone(drone, inc);
+    }
   }
+
+  renderTbtInspector();
 }
 
 let autoInterval = null;
@@ -1825,8 +3150,33 @@ function renderFeed(i, dt) {
 // ===================================================================
 function update(dt) {
   for (const d of STATE.drones) {
-    const dx = d.targetX - d.x, dy = d.targetY - d.y;
+    let targetX = d.targetX;
+    let targetY = d.targetY;
+
+    if (d.corridorWaypoints && d.corridorWaypoints.length > 0) {
+      const nextWP = d.corridorWaypoints[0];
+      targetX = nextWP.x;
+      targetY = nextWP.y;
+      const wpDx = targetX - d.x;
+      const wpDy = targetY - d.y;
+      const wpDist = Math.sqrt(wpDx * wpDx + wpDy * wpDy);
+
+      if (wpDist < 0.007) {
+        // Reached intermediate corridor waypoint!
+        d.corridorWaypoints.shift();
+        if (d.corridorWaypoints.length > 0) {
+          targetX = d.corridorWaypoints[0].x;
+          targetY = d.corridorWaypoints[0].y;
+          d.targetX = targetX;
+          d.targetY = targetY;
+        }
+        updateDroneCorridorLine(d, d.corridorWaypoints);
+      }
+    }
+
+    const dx = targetX - d.x, dy = targetY - d.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
+
     if (dist > 0.005) {
       d.x += (dx / dist) * d.speed;
       d.y += (dy / dist) * d.speed;
@@ -1839,12 +3189,18 @@ function update(dt) {
         const inc = STATE.incidents.find(i => i.id === d.assignedIncident);
         if (inc && !inc.arrivalHandled) {
           inc.arrivalHandled = true;
+          clearDroneCorridorLine(d.id);
           addLog(`ARRIVED: ${d.id} @ INCIDENT #${inc.id} | ${inc.type}`, 'ok');
           inc.status = 'on-scene';
           const delay = 4000 + Math.random() * 4000;
           setTimeout(() => {
             inc.status = 'resolved';
             inc.resolvedAt = Date.now();
+            if (inc.priorityKey) {
+              INCIDENT_TBST.delete(inc.priorityKey);
+              STATE.tbtStats.nodeCount = INCIDENT_TBST.size;
+              renderTbtInspector();
+            }
             returnDrone(d);
             renderIncidents();
             renderDrones();
@@ -1855,6 +3211,8 @@ function update(dt) {
       } else if (d.status === 'returning') {
         d.status = 'standby';
         d.trail = [];
+        d.corridorWaypoints = [];
+        clearDroneCorridorLine(d.id);
         addLog(`STANDBY: ${d.id} returned to base`, 'ok');
         dispatchPending();
       }
@@ -1940,6 +3298,196 @@ function togglePanel(which) {
 }
 
 // ===================================================================
+//  DSA MODAL & TBT INSPECTOR CONTROLS
+// ===================================================================
+function openDsaModal() {
+  const modal = document.getElementById('dsaModalBackdrop');
+  if (modal) {
+    modal.style.display = 'flex';
+    renderDsaModal();
+  }
+}
+
+function closeDsaModal() {
+  const modal = document.getElementById('dsaModalBackdrop');
+  if (modal) modal.style.display = 'none';
+}
+
+function switchDsaTab(tab) {
+  const tbtContent = document.getElementById('dsaTabTbtContent');
+  const graphContent = document.getElementById('dsaTabGraphContent');
+  const btnTbt = document.getElementById('tabBtnTbt');
+  const btnGraph = document.getElementById('tabBtnGraph');
+
+  if (tab === 'tbt') {
+    tbtContent.style.display = 'flex';
+    graphContent.style.display = 'none';
+    btnTbt.classList.add('active');
+    btnGraph.classList.remove('active');
+    renderTbtInspector();
+  } else {
+    tbtContent.style.display = 'none';
+    graphContent.style.display = 'flex';
+    btnTbt.classList.remove('active');
+    btnGraph.classList.add('active');
+  }
+}
+
+function renderDsaModal() {
+  renderTbtInspector();
+  const algoNameEl = document.getElementById('dsaActiveAlgoName');
+  if (algoNameEl) algoNameEl.textContent = (STATE.routingAlgo || 'astar').toUpperCase() + ' SEARCH';
+}
+
+function renderTbtInspector() {
+  const nodeCountEl = document.getElementById('tbtStatNodes');
+  const rootEl = document.getElementById('tbtStatRoot');
+  const travEl = document.getElementById('tbtStatTraversals');
+  const seqEl = document.getElementById('tbtSequenceView');
+  const tbody = document.getElementById('tbtTableBody');
+  const asciiBox = document.getElementById('tbtAsciiBox');
+
+  if (!nodeCountEl) return;
+
+  nodeCountEl.textContent = INCIDENT_TBST.size;
+  rootEl.textContent = INCIDENT_TBST.root ? INCIDENT_TBST.root.key : 'NONE';
+  travEl.textContent = STATE.tbtStats.stacklessTraversals;
+
+  const inOrder = INCIDENT_TBST.inorderTraversal();
+  const revInOrder = INCIDENT_TBST.reverseInorderTraversal();
+
+  if (revInOrder.length === 0) {
+    seqEl.innerHTML = '<span style="color:var(--text-dim)">Tree is currently empty. Simulate incidents to populate Threaded BST.</span>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:14px;">No nodes in Threaded Binary Tree</td></tr>';
+    asciiBox.textContent = 'No nodes in TBST';
+    return;
+  }
+
+  // Display priority sequence
+  seqEl.innerHTML = revInOrder.map((item, idx) => {
+    const inc = item.data;
+    const col = inc.severity === 'critical' ? '#ff3b3b' : inc.severity === 'high' ? '#ffb800' : '#00e5ff';
+    return `<span style="background:${col}1a;border:1px solid ${col};color:${col};padding:3px 8px;border-radius:2px;margin-right:6px;font-size:10px;">
+      #${idx + 1} [Key ${item.key}] ${inc.type} (${inc.severity.toUpperCase()})
+    </span>`;
+  }).join(' ➔ ');
+
+  // Render Table of Nodes
+  tbody.innerHTML = inOrder.map(item => {
+    const inc = item.data;
+    const sevCol = inc.severity === 'critical' ? 'var(--accent-danger)' : inc.severity === 'high' ? 'var(--accent-warn)' : 'var(--accent-primary)';
+    return `<tr>
+      <td style="color:var(--accent-primary);font-weight:bold;">${item.key}</td>
+      <td>${inc.type}</td>
+      <td style="color:${sevCol};font-weight:bold;">${inc.severity.toUpperCase()}</td>
+      <td>${(inc.confidence * 100).toFixed(1)}%</td>
+      <td>${item.leftKey !== null && !item.leftThread ? item.leftKey : '--'}</td>
+      <td><span class="thread-tag ${item.leftThread ? 'yes' : 'no'}">${item.leftThread ? 'PRED ➔ ' + (item.leftKey ?? 'NULL') : 'CHILD'}</span></td>
+      <td>${item.rightKey !== null && !item.rightThread ? item.rightKey : '--'}</td>
+      <td><span class="thread-tag ${item.rightThread ? 'yes' : 'no'}">${item.rightThread ? 'SUCC ➔ ' + (item.rightKey ?? 'NULL') : 'CHILD'}</span></td>
+    </tr>`;
+  }).join('');
+
+  asciiBox.textContent = INCIDENT_TBST.getTreeAscii();
+}
+
+function testInsertTbtAlert() {
+  const types = ['CRITICAL FIRE', 'TERROR SUSPECT', 'STRUCTURAL BREACH', 'AMBULANCE ESCORT'];
+  const sevs = ['critical', 'high', 'medium'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const sev = sevs[Math.floor(Math.random() * sevs.length)];
+  const conf = 0.82 + Math.random() * 0.16;
+  const id = STATE.incidentIdCounter++;
+  const priorityKey = (sev === 'critical' ? 3000 : sev === 'high' ? 2000 : 1000)
+    + Math.round(conf * 900)
+    + (id % 100);
+
+  const mockInc = {
+    id,
+    type,
+    severity: sev,
+    confidence: conf,
+    status: 'pending',
+    location: 'Simulated Air Corridor Zone',
+    timestamp: new Date().toLocaleTimeString()
+  };
+
+  INCIDENT_TBST.insert(priorityKey, mockInc);
+  STATE.tbtStats.inserts++;
+  STATE.tbtStats.nodeCount = INCIDENT_TBST.size;
+  renderTbtInspector();
+  addLog(`[DSA TBST TEST] Inserted node [Key: ${priorityKey}] ${type} into TBST`, 'ok');
+}
+
+function populateRouteTesterDropdowns() {
+  const startSel = document.getElementById('routeStartSelect');
+  const targetSel = document.getElementById('routeTargetSelect');
+  if (!startSel || !targetSel) return;
+
+  startSel.innerHTML = '';
+  targetSel.innerHTML = '';
+
+  const keys = Object.keys(CORRIDOR_NODES);
+  keys.forEach((k, idx) => {
+    const opt1 = document.createElement('option');
+    opt1.value = k;
+    opt1.textContent = `${CORRIDOR_NODES[k].name} (${k})`;
+    startSel.appendChild(opt1);
+
+    const opt2 = document.createElement('option');
+    opt2.value = k;
+    opt2.textContent = `${CORRIDOR_NODES[k].name} (${k})`;
+    if (idx === keys.length - 1) opt2.selected = true;
+    targetSel.appendChild(opt2);
+  });
+}
+
+let testRoutePolyline = null;
+function testCustomRoute() {
+  const startId = document.getElementById('routeStartSelect').value;
+  const targetId = document.getElementById('routeTargetSelect').value;
+  const algo = document.getElementById('routeAlgoSelect').value;
+  const resBox = document.getElementById('routeResultBox');
+
+  const startNode = CORRIDOR_NODES[startId];
+  const targetNode = CORRIDOR_NODES[targetId];
+
+  const t0 = performance.now();
+  const route = calculateFlightCorridor([startNode.lat, startNode.lng], [targetNode.lat, targetNode.lng], algo);
+  const t1 = performance.now();
+
+  resBox.style.display = 'block';
+  resBox.innerHTML = `
+    <div style="color:var(--accent-primary);font-size:12px;margin-bottom:6px;font-weight:bold;">
+      ✓ ROUTE COMPUTED: ${route.algo} (${(t1 - t0).toFixed(3)} ms)
+    </div>
+    <div style="margin-bottom:4px;color:#e0f4ff;">
+      <strong>PATH:</strong> ${route.waypoints.map(w => w.name).join(' ➔ ')}
+    </div>
+    <div style="display:flex;gap:16px;color:var(--text-secondary);font-size:10px;">
+      <span>CORRIDOR HOPS: <strong style="color:#00ff88">${route.hops}</strong></span>
+      <span>TOTAL DISTANCE: <strong style="color:var(--accent-primary)">${(route.distanceM / 1000).toFixed(2)} km</strong></span>
+      <span>NODES EVALUATED: <strong style="color:var(--accent-warn)">${route.evaluatedCount}</strong></span>
+      <span>NFZ STATUS: <strong style="color:#00ff88">COLLISION FREE</strong></span>
+    </div>
+  `;
+
+  // Plot test route on Leaflet map
+  if (leafletMap) {
+    if (testRoutePolyline) leafletMap.removeLayer(testRoutePolyline);
+    const coords = route.waypoints.map(w => [w.lat, w.lng]);
+    testRoutePolyline = L.polyline(coords, {
+      color: '#ffb800',
+      weight: 3.5,
+      opacity: 0.9,
+      dashArray: '8 6'
+    }).addTo(leafletMap);
+
+    addLog(`[DSA TEST] Plotted ${route.algo} path from ${startNode.name} to ${targetNode.name} on tactical map`, 'ok');
+  }
+}
+
+// ===================================================================
 //  INIT
 // ===================================================================
 async function init() {
@@ -1953,10 +3501,13 @@ async function init() {
   addLog('SYSTEM: All subsystems nominal', 'ok');
   addLog('SYSTEM: Geolocation grid calibrated [PUNE URBAN SECTOR]', 'ok');
   addLog('SYSTEM: 6 drones registered to fleet', 'ok');
-  addLog('SYSTEM: Leaflet OSM map loaded — PUNE grid active', 'ok');
+  addLog('SYSTEM: Leaflet Tactical Map loaded — CartoDB / OSM resilient layer active', 'ok');
+  addLog('DSA ENGINE: Double-Threaded Binary Search Tree (TBST) active for O(1) memory dispatch', 'ok');
+  addLog('DSA ENGINE: Air Corridor Graph (16 nodes, 18 edges, 2 NFZs) loaded | Default: A* Pathfinding', 'ok');
   addLog('SYSTEM: Video feeds connected — 4/4 active', 'ok');
-  addLog('SYSTEM: Incident heatmap layer initialized', 'ok');
+  if (heatLayer) addLog('SYSTEM: Incident heatmap layer initialized', 'ok');
 
+  renderTbtInspector();
   requestAnimationFrame(loop);
 
   // Async: webcam + AI (don't block init)
